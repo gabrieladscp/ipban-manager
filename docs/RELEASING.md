@@ -46,6 +46,11 @@ O que o workflow `Release` faz, nesta ordem (qualquer falha interrompe a publica
 Arquivos da Release: `IPBanManager-<canal>-Setup.exe` (instalador), `IPBanManager-<canal>-Portable.zip`,
 `*-full.nupkg` + `releases.<canal>.json` (consumidos pelo app) e `SHA256SUMS.txt`.
 
+`SHA256SUMS.txt` e o atestado cobrem os arquivos **imutáveis desta versão** (Setup, Portable e o `.nupkg` da
+versão). O `releases.<canal>.json` fica de fora de propósito: o `vpk upload --merge` o reescreve ao publicar
+(une com o feed anterior). Ele não precisa de hash próprio porque contém o SHA-1/SHA-256/tamanho de cada pacote,
+e o app recusa qualquer pacote que não confira com eles.
+
 **Ensaio sem publicar:** *Actions > Release > Run workflow*, informe a versão e deixe `publish` desmarcado. Os
 artefatos ficam disponíveis por 30 dias na execução.
 

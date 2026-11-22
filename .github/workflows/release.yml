@@ -165,12 +165,21 @@ jobs:
       # ---------------------------------------------------------------- integridade
       - name: Gerar SHA256SUMS.txt
         shell: pwsh
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+          CHANNEL: ${{ steps.ver.outputs.channel }}
         run: |
+          # Somente os arquivos IMUTÁVEIS DESTA versão. Ficam de fora:
+          #  - pacotes de versões anteriores (o `vpk download` os traz para a pasta, mas não são republicados);
+          #  - releases.<canal>.json: o `vpk upload --merge` o reescreve ao publicar (une com o feed anterior).
           Push-Location releases
-          $files = Get-ChildItem -File | Where-Object { $_.Name -match '\.(exe|zip|nupkg|msi)$|^releases\..*\.json$' -and $_.Name -ne 'SHA256SUMS.txt' }
-          $files | ForEach-Object {
-            $h = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
-            "$h *$($_.Name)"
+          $expected = @("IPBanManager-$env:CHANNEL-Setup.exe", "IPBanManager-$env:CHANNEL-Portable.zip",
+                        "IPBanManager-$env:VERSION-$env:CHANNEL-full.nupkg")
+          $missing = $expected | Where-Object { -not (Test-Path $_) }
+          if ($missing) { Write-Error "Arquivos esperados não foram gerados: $($missing -join ', ')"; exit 1 }
+          $expected | ForEach-Object {
+            $h = (Get-FileHash $_ -Algorithm SHA256).Hash.ToLower()
+            "$h *$_"
           } | Set-Content -Path SHA256SUMS.txt -Encoding ascii
           Get-Content SHA256SUMS.txt
           Pop-Location
@@ -183,9 +192,9 @@ jobs:
         uses: actions/attest-build-provenance@v4
         with:
           subject-path: |
-            releases/*.exe
-            releases/*.zip
-            releases/*.nupkg
+            releases/IPBanManager-${{ steps.ver.outputs.channel }}-Setup.exe
+            releases/IPBanManager-${{ steps.ver.outputs.channel }}-Portable.zip
+            releases/IPBanManager-${{ steps.ver.outputs.version }}-${{ steps.ver.outputs.channel }}-full.nupkg
 
       - name: Guardar artefatos do build
         uses: actions/upload-artifact@v7
