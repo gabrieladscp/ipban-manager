@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>IPBanManager.Wpf</RootNamespace>
+    <AssemblyName>IPBanManager</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>..\..\assets\app.ico</ApplicationIcon>
+    <!-- O Velopack exige controlar o início do processo: Main próprio em Program.cs. -->
+    <StartupObject>IPBanManager.Wpf.Program</StartupObject>
+    <Description>Interface gráfica para administrar o IPBan (bloqueio automático de IPs por falhas de login).</Description>
+
+    <!--
+      Repositório que publica as Releases (https://github.com/dono/repositorio).
+      Injetado pelo CI: -p:UpdateRepoUrl=https://github.com/$GITHUB_REPOSITORY
+      Vazio em compilações locais: a atualização automática fica desativada (com aviso na tela).
+    -->
+    <UpdateRepoUrl Condition="'$(UpdateRepoUrl)' == ''"></UpdateRepoUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+    <Resource Include="..\..\assets\app.ico" Link="app.ico" />
+    <ProjectReference Include="..\IPBanManager.Core\IPBanManager.Core.csproj" />
+    <ProjectReference Include="..\IPBanManager.Infrastructure\IPBanManager.Infrastructure.csproj" />
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>UpdateRepoUrl</_Parameter1>
+      <_Parameter2>$(UpdateRepoUrl)</_Parameter2>
+    </AssemblyAttribute>
+    <ApplicationDefinition Remove="App.xaml" />
+    <Page Include="App.xaml" />
+  </ItemGroup>
+</Project>

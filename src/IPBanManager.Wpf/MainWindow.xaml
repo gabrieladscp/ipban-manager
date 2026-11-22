@@ -1,0 +1,27 @@
+<Window x:Class="IPBanManager.Wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="IPBan Manager" Width="1040" Height="720" MinWidth="820" MinHeight="540"
+        Icon="app.ico" WindowStartupLocation="CenterScreen" Closing="Window_Closing">
+    <DockPanel>
+        <Border DockPanel.Dock="Bottom" Background="#F3F3F3" BorderBrush="#DDD" BorderThickness="0,1,0,0" Padding="12,5">
+            <TextBlock x:Name="StatusBarText" Text="Pronto."/>
+        </Border>
+        <Border DockPanel.Dock="Top" Background="#F3F3F3" Padding="12,8" BorderBrush="#DDD" BorderThickness="0,0,0,1">
+            <DockPanel>
+                <Button x:Name="ChangeButton" DockPanel.Dock="Right" Content="Alterar pasta..." Margin="0" Click="Change_Click"/>
+                <StackPanel>
+                    <TextBlock>
+                        <Run Text="Pasta do IPBan: " FontWeight="SemiBold"/>
+                        <Run x:Name="DirectoryText"/>
+                    </TextBlock>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+        <Border x:Name="Banner" DockPanel.Dock="Top" Background="#FFF4CE" BorderBrush="#E6C200" BorderThickness="0,0,0,1"
+                Padding="12,8" Visibility="Collapsed">
+            <TextBlock x:Name="BannerText" TextWrapping="Wrap" Foreground="#5C4A00"/>
+        </Border>
+        <TabControl x:Name="Tabs" Margin="8"/>
+    </DockPanel>
+</Window>

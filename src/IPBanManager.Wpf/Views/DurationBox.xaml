@@ -1,0 +1,14 @@
+<UserControl x:Class="IPBanManager.Wpf.Views.DurationBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel Orientation="Horizontal">
+        <TextBox x:Name="Days" Width="48" MaxLength="4" HorizontalContentAlignment="Right" PreviewTextInput="Digits_PreviewTextInput" ToolTip="Dias"/>
+        <TextBlock Text="d " VerticalAlignment="Center" Margin="2,0,8,0"/>
+        <TextBox x:Name="Hours" Width="36" MaxLength="2" HorizontalContentAlignment="Right" PreviewTextInput="Digits_PreviewTextInput" ToolTip="Horas (0-23)"/>
+        <TextBlock Text="h " VerticalAlignment="Center" Margin="2,0,8,0"/>
+        <TextBox x:Name="Minutes" Width="36" MaxLength="2" HorizontalContentAlignment="Right" PreviewTextInput="Digits_PreviewTextInput" ToolTip="Minutos (0-59)"/>
+        <TextBlock Text="min " VerticalAlignment="Center" Margin="2,0,8,0"/>
+        <TextBox x:Name="Seconds" Width="36" MaxLength="2" HorizontalContentAlignment="Right" PreviewTextInput="Digits_PreviewTextInput" ToolTip="Segundos (0-59)"/>
+        <TextBlock Text="s" VerticalAlignment="Center" Margin="2,0,0,0"/>
+    </StackPanel>
+</UserControl>

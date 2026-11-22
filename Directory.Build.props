@@ -1,0 +1,22 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>10.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+  </PropertyGroup>
+
+  <!--
+    Versão do produto (Versionamento Semântico 2.0): MAJOR.MINOR.PATCH[-beta.N]
+    Fonte única da verdade. O GitHub Actions sobrescreve com a versão da tag (vX.Y.Z / vX.Y.Z-beta.N):
+        dotnet build -p:Version=1.2.0-beta.1
+    AssemblyVersion/FileVersion numéricos são derivados automaticamente (1.2.0.0).
+  -->
+  <PropertyGroup>
+    <Version>1.0.0</Version>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <Product>IPBan Manager</Product>
+    <Company>Skytins</Company>
+    <Copyright>Copyright © 2026 Skytins</Copyright>
+  </PropertyGroup>
+</Project>

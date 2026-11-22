@@ -1,0 +1,88 @@
+<local:ConfigSectionViewBase x:Class="IPBanManager.Wpf.Views.SettingsView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:IPBanManager.Wpf.Views">
+    <DockPanel Margin="4">
+        <local:SaveBar DockPanel.Dock="Bottom" Margin="8,0,0,8"/>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="8">
+                <GroupBox Header="Detecção e bloqueio" Margin="0,0,0,10">
+                    <StackPanel>
+                        <WrapPanel>
+                            <StackPanel Style="{StaticResource Field}" ToolTip="Falhas de login antes de bloquear o IP.">
+                                <TextBlock Style="{StaticResource FieldLabel}" Text="Tentativas antes do bloqueio"/>
+                                <TextBox x:Name="FailedAttempts" Width="80" HorizontalAlignment="Left"/>
+                            </StackPanel>
+                            <StackPanel Style="{StaticResource Field}" Width="420"
+                                        ToolTip="Duração do bloqueio no formato DD:HH:MM:SS. Vários valores separados por vírgula, em ordem crescente (a cada reincidência o bloqueio fica maior). 00:00:00:00 = bloqueio máximo (9999 dias).">
+                                <TextBlock Style="{StaticResource FieldLabel}" Text="Tempo de bloqueio (DD:HH:MM:SS)"/>
+                                <TextBox x:Name="BanTime"/>
+                                <TextBlock Style="{StaticResource Hint}" Margin="0,3,0,0"
+                                           Text="Ex.: 01:00:00:00 = 1 dia. Escalonado: 00:01:00:00,01:00:00:00 (1 h, depois 1 dia)."/>
+                            </StackPanel>
+                        </WrapPanel>
+                        <WrapPanel>
+                            <StackPanel Style="{StaticResource Field}" ToolTip="Tempo para esquecer falhas de login antigas.">
+                                <TextBlock Style="{StaticResource FieldLabel}" Text="Expiração das falhas"/>
+                                <local:DurationBox x:Name="ExpireTime"/>
+                            </StackPanel>
+                            <StackPanel Style="{StaticResource Field}" ToolTip="Intervalo entre os ciclos de processamento do serviço.">
+                                <TextBlock Style="{StaticResource FieldLabel}" Text="Intervalo de ciclo"/>
+                                <local:DurationBox x:Name="CycleTime"/>
+                            </StackPanel>
+                            <StackPanel Style="{StaticResource Field}" ToolTip="Falhas mais próximas que isso são contadas como uma só.">
+                                <TextBlock Style="{StaticResource FieldLabel}" Text="Mínimo entre falhas de login"/>
+                                <local:DurationBox x:Name="MinFailed"/>
+                            </StackPanel>
+                            <StackPanel Style="{StaticResource Field}">
+                                <TextBlock Style="{StaticResource FieldLabel}" Text="Mínimo entre logins com sucesso"/>
+                                <local:DurationBox x:Name="MinSuccess"/>
+                            </StackPanel>
+                        </WrapPanel>
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox Header="Comportamento" Margin="0,0,0,10">
+                    <StackPanel>
+                        <CheckBox x:Name="ResetUnbanned" Margin="0,2" Content="Zerar contagem de falhas ao desbloquear um IP"/>
+                        <CheckBox x:Name="ClearOnRestart" Margin="0,2" Content="Limpar IPs bloqueados ao reiniciar o serviço"/>
+                        <CheckBox x:Name="ClearOnSuccess" Margin="0,2" Content="Limpar falhas após login com sucesso"/>
+                        <CheckBox x:Name="InternalIps" Margin="0,2" Content="Processar endereços IP internos (rede local)"/>
+                        <CheckBox x:Name="DefaultHandler" Margin="0,2" Content="Usar o compartilhamento padrão de IPs bloqueados"/>
+                        <WrapPanel Margin="0,10,0,0">
+                            <StackPanel Style="{StaticResource Field}" ToolTip="Prefixo dos nomes das regras criadas no Windows Firewall. Alterar faz o IPBan criar novas regras.">
+                                <TextBlock Style="{StaticResource FieldLabel}" Text="Prefixo das regras de firewall"/>
+                                <TextBox x:Name="Prefix"/>
+                            </StackPanel>
+                            <StackPanel Style="{StaticResource Field}">
+                                <TextBlock Style="{StaticResource FieldLabel}" Text="URL do IP externo"/>
+                                <TextBox x:Name="ExternalUrl"/>
+                            </StackPanel>
+                            <StackPanel Style="{StaticResource Field}">
+                                <TextBlock Style="{StaticResource FieldLabel}" Text="Chave da API IPThreat (opcional)"/>
+                                <TextBox x:Name="ApiKey"/>
+                            </StackPanel>
+                        </WrapPanel>
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox Header="Nomes de usuário">
+                    <WrapPanel>
+                        <StackPanel Style="{StaticResource Field}" ToolTip="Corta o nome de usuário no primeiro destes caracteres (ex.: @ para e-mails).">
+                            <TextBlock Style="{StaticResource FieldLabel}" Text="Caracteres de truncamento"/>
+                            <TextBox x:Name="Truncate"/>
+                        </StackPanel>
+                        <StackPanel Style="{StaticResource Field}">
+                            <TextBlock Style="{StaticResource FieldLabel}" Text="Distância mínima de edição (whitelist)"/>
+                            <TextBox x:Name="EditDistance" Width="80" HorizontalAlignment="Left"/>
+                        </StackPanel>
+                        <StackPanel Style="{StaticResource Field}">
+                            <TextBlock Style="{StaticResource FieldLabel}" Text="Tentativas para usuários da whitelist"/>
+                            <TextBox x:Name="UserAttempts" Width="80" HorizontalAlignment="Left"/>
+                        </StackPanel>
+                    </WrapPanel>
+                </GroupBox>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</local:ConfigSectionViewBase>

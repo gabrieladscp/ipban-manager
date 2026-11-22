@@ -1,0 +1,41 @@
+<local:ConfigSectionViewBase x:Class="IPBanManager.Wpf.Views.ListsView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:IPBanManager.Wpf.Views">
+    <DockPanel Margin="4">
+        <local:SaveBar DockPanel.Dock="Bottom" Margin="8,0,0,8"/>
+        <Grid Margin="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/><ColumnDefinition/><ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/><RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <DockPanel Grid.Column="0" Margin="0,0,8,0">
+                <TextBlock DockPanel.Dock="Top" Style="{StaticResource FieldLabel}" Text="Whitelist (nunca bloquear)"/>
+                <TextBlock DockPanel.Dock="Top" Style="{StaticResource Hint}" Text="Um por linha: IP, faixa CIDR, nome DNS ou URL. Inclua aqui o IP de quem administra o servidor."/>
+                <TextBox x:Name="Whitelist" Style="{StaticResource Mono}"/>
+            </DockPanel>
+            <DockPanel Grid.Column="1" Margin="0,0,8,0">
+                <TextBlock DockPanel.Dock="Top" Style="{StaticResource FieldLabel}" Text="Blacklist (sempre bloquear)"/>
+                <TextBlock DockPanel.Dock="Top" Style="{StaticResource Hint}" Text="Um por linha. A whitelist tem precedência sobre a blacklist."/>
+                <TextBox x:Name="Blacklist" Style="{StaticResource Mono}"/>
+            </DockPanel>
+            <DockPanel Grid.Column="2">
+                <TextBlock DockPanel.Dock="Top" Style="{StaticResource FieldLabel}" Text="Whitelist de usuários"/>
+                <TextBlock DockPanel.Dock="Top" Style="{StaticResource Hint}" Text="Um por linha. Usuários válidos conhecidos."/>
+                <TextBox x:Name="UserWhitelist" Style="{StaticResource Mono}"/>
+            </DockPanel>
+
+            <StackPanel Grid.Row="1" Grid.ColumnSpan="3" Margin="0,12,0,0">
+                <TextBlock Style="{StaticResource FieldLabel}" Text="Regex da whitelist de IPs (opcional)"/>
+                <TextBox x:Name="WhitelistRegex" Margin="0,0,0,8"/>
+                <TextBlock Style="{StaticResource FieldLabel}" Text="Regex da blacklist de IPs (opcional)"/>
+                <TextBox x:Name="BlacklistRegex" Margin="0,0,0,8"/>
+                <TextBlock Style="{StaticResource FieldLabel}" Text="Regex da whitelist de usuários (opcional)"/>
+                <TextBox x:Name="UserWhitelistRegex"/>
+            </StackPanel>
+        </Grid>
+    </DockPanel>
+</local:ConfigSectionViewBase>

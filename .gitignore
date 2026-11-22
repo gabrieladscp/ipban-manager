@@ -1,0 +1,21 @@
+# Build
+bin/
+obj/
+publish/
+artifacts/
+releases/
+TestResults/
+
+# Instaladores gerados (publicados via GitHub Releases, não versionados)
+installer/Output/
+
+# IDE / usuário
+.vs/
+.vscode/
+*.user
+*.suo
+.idea/
+
+# Backups gerados pelo próprio app durante testes
+*.bak-*
+*.tmp

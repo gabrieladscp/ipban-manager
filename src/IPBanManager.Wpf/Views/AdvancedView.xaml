@@ -1,0 +1,13 @@
+<local:EditableViewBase x:Class="IPBanManager.Wpf.Views.AdvancedView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:IPBanManager.Wpf.Views">
+    <DockPanel Margin="12">
+        <Border DockPanel.Dock="Top" Background="#FFF4CE" BorderBrush="#E6C200" BorderThickness="1" Padding="8" Margin="0,0,0,8">
+            <TextBlock TextWrapping="Wrap" Foreground="#5C4A00"
+                       Text="Edição do ipban.config completo (expressões do Event Viewer, arquivos de log). Apenas para usuários avançados: o XML é validado e um backup é criado ao salvar, mas um XML correto com regras erradas pode desativar a proteção."/>
+        </Border>
+        <local:SaveBar DockPanel.Dock="Bottom" SaveText="Salvar XML (Ctrl+S)"/>
+        <TextBox x:Name="XmlBox" Style="{StaticResource Mono}"/>
+    </DockPanel>
+</local:EditableViewBase>

@@ -1,0 +1,32 @@
+<local:ConfigSectionViewBase x:Class="IPBanManager.Wpf.Views.ActionsView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:IPBanManager.Wpf.Views">
+    <DockPanel Margin="4">
+        <local:SaveBar DockPanel.Dock="Bottom" Margin="8,0,0,8"/>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="8">
+                <TextBlock Style="{StaticResource FieldLabel}" Text="Regras de firewall personalizadas"/>
+                <TextBlock Style="{StaticResource Hint}"
+                           Text="Uma por linha: nome;allow|block;lista de IPs;portas;regex da plataforma. Ex.: RedisAllowIP;allow;10.0.0.1,192.168.1.0/24;6379;."/>
+                <TextBox x:Name="FirewallRules" Style="{StaticResource Mono}" Height="90" Margin="0,0,0,12"/>
+
+                <TextBlock Style="{StaticResource FieldLabel}" Text="Listas externas de bloqueio (URL)"/>
+                <TextBlock Style="{StaticResource Hint}"
+                           Text="Uma por linha: prefixo,intervalo DD:HH:MM:SS,URL,máximo. Ex.: EmergingThreats,01:00:00:00,https://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt,10000"/>
+                <TextBox x:Name="UriRules" Style="{StaticResource Mono}" Height="70" Margin="0,0,0,12"/>
+
+                <TextBlock Style="{StaticResource FieldLabel}" Text="Executar processo ao bloquear um IP"/>
+                <TextBlock Style="{StaticResource Hint}"
+                           Text="Formato: caminho|argumentos. Variáveis: ###IPADDRESS###, ###USERNAME###, ###SOURCE###, ###COUNT###. Um processo por linha. Executa com a conta do serviço (SYSTEM): use apenas programas confiáveis."/>
+                <TextBox x:Name="OnBan" Style="{StaticResource Mono}" Height="50" Margin="0,0,0,12"/>
+
+                <TextBlock Style="{StaticResource FieldLabel}" Text="Executar processo ao desbloquear um IP"/>
+                <TextBox x:Name="OnUnban" Style="{StaticResource Mono}" Height="50" Margin="0,0,0,12"/>
+
+                <TextBlock Style="{StaticResource FieldLabel}" Text="Executar processo em login com sucesso"/>
+                <TextBox x:Name="OnSuccess" Style="{StaticResource Mono}" Height="50"/>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</local:ConfigSectionViewBase>

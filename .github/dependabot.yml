@@ -1,0 +1,17 @@
+version: 2
+updates:
+  # Mantém as GitHub Actions atualizadas (inclui correções de segurança)
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+
+  # Pacotes NuGet. O Velopack (lib) e o vpk (CLI do release.yml) precisam andar juntos:
+  # ao atualizar um, atualize o outro (env.VPK_VERSION em release.yml).
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      test-tools:
+        patterns: ['xunit*', 'Microsoft.NET.Test.Sdk']

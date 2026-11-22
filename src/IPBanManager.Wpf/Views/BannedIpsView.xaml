@@ -1,0 +1,31 @@
+<local:ViewBase x:Class="IPBanManager.Wpf.Views.BannedIpsView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:IPBanManager.Wpf.Views">
+    <DockPanel Margin="12">
+        <GroupBox DockPanel.Dock="Top" Header="Bloquear manualmente" Margin="0,0,0,10">
+            <DockPanel>
+                <Button DockPanel.Dock="Right" Content="Bloquear IP" Margin="8,0,0,0" Style="{StaticResource PrimaryButton}" Click="Ban_Click"/>
+                <TextBox x:Name="ManualAddress" KeyDown="ManualAddress_KeyDown"
+                         ToolTip="IP (v4/v6) ou faixa CIDR. Ex.: 203.0.113.7 ou 198.51.100.0/24"/>
+            </DockPanel>
+        </GroupBox>
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+            <Button DockPanel.Dock="Right" Content="Atualizar" Margin="8,0,0,0" Click="Refresh_Click"/>
+            <TextBlock DockPanel.Dock="Left" Text="Filtrar: " VerticalAlignment="Center"/>
+            <TextBox x:Name="FilterBox" TextChanged="Filter_TextChanged" ToolTip="Filtra por endereço, origem ou regra"/>
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
+            <Button DockPanel.Dock="Left" Content="Desbloquear selecionados" Padding="14,6" Click="Unban_Click"/>
+            <TextBlock x:Name="CountText" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+        </DockPanel>
+        <DataGrid x:Name="Grid" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Extended"
+                  HeadersVisibility="Column" GridLinesVisibility="Horizontal" EnableRowVirtualization="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Endereço" Binding="{Binding Address}" Width="*"/>
+                <DataGridTextColumn Header="Origem" Binding="{Binding Origin}" Width="120"/>
+                <DataGridTextColumn Header="Regra do firewall" Binding="{Binding RuleName}" Width="200"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</local:ViewBase>
