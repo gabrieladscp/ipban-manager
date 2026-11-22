@@ -41,7 +41,7 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -80,11 +80,11 @@ jobs:
           }
 
       # ---------------------------------------------------------------- build + testes
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 8.0.x
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Build.props') }}
@@ -180,7 +180,7 @@ jobs:
 
       - name: Atestado de proveniência (quem/onde/como foi compilado)
         if: steps.ver.outputs.publish == 'true'
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@v4
         with:
           subject-path: |
             releases/*.exe
@@ -188,7 +188,7 @@ jobs:
             releases/*.nupkg
 
       - name: Guardar artefatos do build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-${{ steps.ver.outputs.version }}
           path: releases/*
