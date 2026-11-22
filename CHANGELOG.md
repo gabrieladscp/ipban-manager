@@ -7,11 +7,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ## [1.0.1] - 2026-11-22
 
-## [1.0.1-beta.1] - 2026-11-22
-
 ### Adicionado
 - Atualização automática (Velopack) com canais Stable e Beta, verificação de integridade dos pacotes
-  e reversão automática/manual para a última versão boa.
+  (tamanho, SHA-1 e SHA-256) e reversão automática/manual para a última versão boa.
 - Aba "Atualizações" com versão instalada, canal, verificação, instalação e reversão.
 - Pipeline no GitHub Actions: CI (build + testes) e Release (empacota, gera `SHA256SUMS.txt`,
   atestado de proveniência e publica no GitHub Releases).
@@ -19,6 +17,11 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 ### Corrigido
 - Gravação de configurações/estado agora é durável (flush em disco antes da troca atômica): uma queda de
   energia podia deixar o arquivo zerado.
+- O título da janela mostra a versão completa, inclusive o sufixo `-beta.N`.
+
+## [1.0.1-beta.1] - 2026-11-22
+
+Pré-lançamento de 1.0.1 (canal Beta), usado para validar a atualização Stable → Beta → Stable.
 
 ## [1.0.0]
 
