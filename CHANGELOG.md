@@ -5,6 +5,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-11-22
+
 ### Alterado
 - Assinatura de código no pipeline agora usa secrets (`SIGN_PFX_BASE64`/`SIGN_PFX_PASSWORD`) no lugar da
   variável `VPK_SIGN_PARAMS`, que exporia a senha do certificado nos logs; o certificado é validado antes e a
