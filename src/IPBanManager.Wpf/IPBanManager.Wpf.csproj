@@ -16,6 +16,16 @@
       Vazio em compilações locais: a atualização automática fica desativada (com aviso na tela).
     -->
     <UpdateRepoUrl Condition="'$(UpdateRepoUrl)' == ''"></UpdateRepoUrl>
+
+    <!--
+      IPBan oficial embutido (instalado pelo aplicativo quando o servidor ainda não o tem).
+      Para atualizar: troque versão, URL e SHA-256 (o "digest" do arquivo na Release do DigitalRuby/IPBan).
+    -->
+    <IPBanBundleVersion>4.1.0</IPBanBundleVersion>
+    <IPBanBundleUrl>https://github.com/DigitalRuby/IPBan/releases/download/4.1.0/IPBan-Windows-x64_4_1_0.zip</IPBanBundleUrl>
+    <IPBanBundleSha256>08867379f6fc165e71ea7c8ecb38cf3661a212737b41d9a480d721e5fb4f97d7</IPBanBundleSha256>
+    <IPBanBundleCacheDir>$(MSBuildThisFileDirectory)..\..\artifacts\ipban-bundle\$(IPBanBundleVersion)\</IPBanBundleCacheDir>
+    <IPBanBundleFile>$(IPBanBundleCacheDir)IPBan-Windows-x64.zip</IPBanBundleFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />
@@ -26,7 +36,31 @@
       <_Parameter1>UpdateRepoUrl</_Parameter1>
       <_Parameter2>$(UpdateRepoUrl)</_Parameter2>
     </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>IPBanBundleVersion</_Parameter1>
+      <_Parameter2>$(IPBanBundleVersion)</_Parameter2>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>IPBanBundleSha256</_Parameter1>
+      <_Parameter2>$(IPBanBundleSha256)</_Parameter2>
+    </AssemblyAttribute>
     <ApplicationDefinition Remove="App.xaml" />
     <Page Include="App.xaml" />
   </ItemGroup>
+
+  <!-- Baixa (uma vez, com cache) e confere o pacote do IPBan; a compilação falha se o hash não conferir. -->
+  <Target Name="FetchIPBanBundle" BeforeTargets="AssignTargetPaths">
+    <DownloadFile Condition="!Exists('$(IPBanBundleFile)')" SourceUrl="$(IPBanBundleUrl)"
+                  DestinationFolder="$(IPBanBundleCacheDir)" DestinationFileName="IPBan-Windows-x64.zip" Retries="3" />
+    <GetFileHash Files="$(IPBanBundleFile)" Algorithm="SHA256">
+      <Output TaskParameter="Hash" PropertyName="_IPBanBundleActualHash" />
+    </GetFileHash>
+    <Delete Condition="'$(_IPBanBundleActualHash.ToLowerInvariant())' != '$(IPBanBundleSha256.ToLowerInvariant())'" Files="$(IPBanBundleFile)" />
+    <Error Condition="'$(_IPBanBundleActualHash.ToLowerInvariant())' != '$(IPBanBundleSha256.ToLowerInvariant())'"
+           Text="SHA-256 do pacote do IPBan não confere (esperado $(IPBanBundleSha256), obtido $(_IPBanBundleActualHash)). Download descartado." />
+    <ItemGroup>
+      <None Include="$(IPBanBundleFile)" Link="IPBan\IPBan-Windows-x64.zip"
+            CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    </ItemGroup>
+  </Target>
 </Project>

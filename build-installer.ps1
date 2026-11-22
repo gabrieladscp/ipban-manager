@@ -41,7 +41,13 @@ New-Item -ItemType Directory -Force $staging | Out-Null
 $out = Join-Path $root 'src\IPBanManager.Wpf\bin\Release\net48'
 Get-ChildItem $out -File | Where-Object { $_.Extension -in '.exe', '.dll', '.config' } |
     Copy-Item -Destination $staging
-Get-ChildItem $staging | Select-Object Name, Length | Format-Table -AutoSize
+# Pacote oficial do IPBan (instalado pelo aplicativo); sem ele o instalador não teria o que instalar.
+$bundle = Join-Path $out 'IPBan\IPBan-Windows-x64.zip'
+if (-not (Test-Path $bundle)) { throw "Pacote do IPBan ausente em $bundle" }
+New-Item -ItemType Directory -Force (Join-Path $staging 'IPBan') | Out-Null
+Copy-Item $bundle (Join-Path $staging 'IPBan')
+Get-ChildItem $staging -Recurse -File | Select-Object @{n='Arquivo';e={$_.FullName.Substring($staging.Length + 1)}}, Length |
+    Format-Table -AutoSize
 
 Invoke-Step 'Instalador (Inno Setup)' { & $Iscc "/DAppVersion=$version" (Join-Path $root 'installer\IPBanManager.iss') }
 

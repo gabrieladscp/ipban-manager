@@ -12,6 +12,8 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Velopack" Version="1.2.161" />

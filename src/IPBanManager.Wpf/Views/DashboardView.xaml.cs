@@ -49,6 +49,18 @@ public partial class DashboardView : ViewBase, IDashboardView
 
     public void ShowBannedCount(int count) => CountText.Text = count.ToString();
 
+    public event EventHandler UpgradeIPBanRequested;
+
+    public void ShowIPBanVersion(string installed, string upgradeTo)
+    {
+        VersionPanel.Visibility = installed == null ? Visibility.Collapsed : Visibility.Visible;
+        VersionText.Text = installed ?? "";
+        UpgradeButton.Visibility = upgradeTo == null ? Visibility.Collapsed : Visibility.Visible;
+        UpgradeButton.Content = "Atualizar para " + upgradeTo + "...";
+    }
+
+    private void Upgrade_Click(object s, RoutedEventArgs e) => UpgradeIPBanRequested?.Invoke(this, EventArgs.Empty);
+
     private void Start_Click(object s, RoutedEventArgs e) => StartRequested?.Invoke(this, EventArgs.Empty);
     private void Stop_Click(object s, RoutedEventArgs e) => StopRequested?.Invoke(this, EventArgs.Empty);
     private void Restart_Click(object s, RoutedEventArgs e) => RestartRequested?.Invoke(this, EventArgs.Empty);

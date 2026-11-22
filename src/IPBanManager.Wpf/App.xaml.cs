@@ -11,6 +11,7 @@ using IPBanManager.Core.Updates;
 using IPBanManager.Core.Validation;
 using IPBanManager.Core.Views;
 using IPBanManager.Infrastructure;
+using IPBanManager.Infrastructure.Provisioning;
 using IPBanManager.Infrastructure.Updates;
 using IPBanManager.Wpf.Views;
 using Velopack.Locators;
@@ -27,6 +28,7 @@ public partial class App : Application
     private Mutex _singleInstance;
     private IAppLogger _logger = NullLogger.Instance;
     private object[] _presenters;
+    private MainPresenter _mainPresenter;
     private UpdateHealthGuard _guard;
     private VelopackUpdateService _updateService;
     private UpdatePresenter _updatePresenter;
@@ -61,6 +63,8 @@ public partial class App : Application
             var refreshes = Compose();
             await Task.WhenAll(refreshes);
             _startedOk = true;
+            // Servidor sem IPBan (ex.: logo após instalar o IPBan Manager): abre o assistente de instalação.
+            _mainPresenter.OfferSetupIfMissing();
             StartHealthMonitoring();
             StartUpdateScheduler();
         }
@@ -152,8 +156,10 @@ public partial class App : Application
 
     private Task[] Compose()
     {
-        var locator = new InstallationLocator();
+        var locator = new InstallationLocator(IPBanSetupFactory.ServiceName);
         var config = new XmlConfigurationRepository(locator);
+        var setup = new IPBanSetupLauncher(IPBanSetupFactory.CreateProvisioner(_logger),
+            new RemoteAccessAddressProvider(), locator, _logger);
         var service = new WindowsServiceController(locator);
         var banned = new FirewallBannedIpProvider();
         var validator = new ConfigurationValidator();
@@ -170,11 +176,13 @@ public partial class App : Application
 
         _updatePresenter = new UpdatePresenter(updatesView, _updateService, _updateSettings.Store, window, _logger);
 
+        _mainPresenter = new MainPresenter(window, locator, _logger, setup);
+
         // Presenters ficam referenciados aqui (os eventos das Views também os mantêm vivos).
         _presenters = new object[]
         {
-            new MainPresenter(window, locator, _logger),
-            new DashboardPresenter(dashboard, locator, service, banned, config, _logger),
+            _mainPresenter,
+            new DashboardPresenter(dashboard, locator, service, banned, config, _logger, setup),
             new ConfigSectionPresenter<ISettingsView>(settings, locator, config, validator, _logger),
             new ConfigSectionPresenter<IListsView>(lists, locator, config, validator, _logger),
             new ConfigSectionPresenter<IActionsView>(actions, locator, config, validator, _logger),

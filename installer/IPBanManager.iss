@@ -48,6 +48,7 @@ ShowLanguageDialog=no
 Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"
 
 [Tasks]
+Name: "installipban"; Description: "Instalar/atualizar e configurar o serviço IPBan 4.1.0 (recomendado)"; GroupDescription: "Proteção:"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
@@ -95,11 +96,34 @@ begin
   end;
 end;
 
-procedure CurrentStepChanged(CurStep: TSetupStep);
+// Instala/atualiza o IPBan embutido usando o próprio aplicativo (mesma rotina do assistente da interface).
+// Implantação silenciosa: IPBanManager-Setup.exe /VERYSILENT /WHITELIST=203.0.113.10,198.51.100.0/24
+// Sem /WHITELIST, entram na whitelist os IPs das sessões de Área de Trabalho Remota ativas.
+procedure InstallIPBan;
+var
+  Params, Whitelist: String;
+  ResultCode: Integer;
 begin
-  if (CurStep = ssPostInstall) and (not IPBanServiceInstalled) then
-    MsgBox('O serviço IPBan não foi encontrado neste servidor.' + #13#10#13#10 +
-           'O {#AppName} administra um IPBan já instalado. Instale o IPBan (https://github.com/DigitalRuby/IPBan) ' +
-           'e depois abra o {#AppName}; se o IPBan estiver em outra pasta, use "Alterar pasta..." no topo da janela.',
-           mbInformation, MB_OK);
+  WizardForm.StatusLabel.Caption := 'Instalando e configurando o serviço IPBan...';
+  Params := '--install-ipban';
+  Whitelist := ExpandConstant('{param:WHITELIST|}');
+  if Whitelist <> '' then
+    Params := Params + ' "--whitelist=' + Whitelist + '"';
+  if not Exec(ExpandConstant('{app}\{#AppExe}'), Params, '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+    ResultCode := -1;
+  if ResultCode <> 0 then
+    SuppressibleMsgBox('Não foi possível instalar o serviço IPBan (código ' + IntToStr(ResultCode) + ').' + #13#10#13#10 +
+           'Abra o {#AppName} e use o botão "Instalar IPBan" para ver os detalhes. ' +
+           'Log: ' + ExpandConstant('{commonappdata}') + '\IPBanManager\logs',
+           mbError, MB_OK, IDOK);
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if CurStep <> ssPostInstall then Exit;
+  if WizardIsTaskSelected('installipban') then
+    InstallIPBan
+  else if not IPBanServiceInstalled then
+    SuppressibleMsgBox('O serviço IPBan não foi instalado. Abra o {#AppName} e clique em "Instalar IPBan" quando quiser ativar a proteção.',
+           mbInformation, MB_OK, IDOK);
 end;

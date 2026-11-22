@@ -13,8 +13,12 @@ desbloqueios pelo `unban.txt`.
 ## Instalação (produção)
 
 Baixe `IPBanManager-stable-Setup.exe` na página de **Releases** do repositório e execute-o
-(o app pede elevação de administrador ao abrir). Requisitos: Windows 10 / Server 2016+ (x64),
-.NET Framework 4.8 (já incluso no Server 2022) e o IPBan instalado.
+(o app pede elevação de administrador ao abrir). Requisitos: Windows 10 / Server 2016+ (x64) e
+.NET Framework 4.8 (já incluso no Server 2022).
+
+**O IPBan vem junto**: se o servidor ainda não tem o IPBan, o app abre o assistente que instala o IPBan oficial
+(4.1.0), ativa a auditoria de logon, cria o serviço e coloca o seu IP de acesso remoto na whitelist. Guia completo de
+implantação (inclusive silenciosa) em [docs/INSTALACAO.md](docs/INSTALACAO.md).
 
 **Atualização automática** (Velopack + GitHub Releases): o app verifica novas versões em segundo plano, baixa o
 pacote, confere a integridade (tamanho, SHA-1 e SHA-256) e pergunta antes de reiniciar. Há dois canais, escolhidos na
@@ -73,7 +77,8 @@ dotnet test tests/IPBanManager.Tests          # 303 testes; filtro: --filter Cat
 ```
 
 O instalador oficial (com atualização automática) é o `IPBanManager-stable-Setup.exe` gerado pelo GitHub Actions
-nas Releases — veja [docs/RELEASING.md](docs/RELEASING.md).
+nas Releases — veja [docs/RELEASING.md](docs/RELEASING.md). Os dois instaladores instalam e configuram o IPBan
+quando o servidor ainda não o tem — veja [docs/INSTALACAO.md](docs/INSTALACAO.md).
 
 Testes: nomes `Método_Cenário_Resultado`, Arrange/Act/Assert, fakes em `Support/`, pastas temporárias isoladas,
 sem `Task.Delay`/sleeps (esperas por sinais com timeout).
@@ -83,4 +88,5 @@ sem `Task.Delay`/sleeps (esperas por sinais com timeout).
 - Assinatura de código: o pipeline assina instalador e executáveis automaticamente quando os secrets
   `SIGN_PFX_BASE64` e `SIGN_PFX_PASSWORD` estão definidos (veja [docs/RELEASING.md](docs/RELEASING.md)).
   Sem certificado, os binários saem sem assinatura e o Windows SmartScreen pode exibir um aviso no primeiro uso.
-- Fora do escopo: instalar/desinstalar o serviço IPBan e ler o `ipban.sqlite` (data/contagem de falhas por IP).
+- Fora do escopo: desinstalar o serviço IPBan (veja `docs/INSTALACAO.md`) e ler o `ipban.sqlite`
+  (data/contagem de falhas por IP).

@@ -20,7 +20,11 @@
         </Border>
         <Border x:Name="Banner" DockPanel.Dock="Top" Background="#FFF4CE" BorderBrush="#E6C200" BorderThickness="0,0,0,1"
                 Padding="12,8" Visibility="Collapsed">
-            <TextBlock x:Name="BannerText" TextWrapping="Wrap" Foreground="#5C4A00"/>
+            <DockPanel>
+                <Button x:Name="InstallIPBanButton" DockPanel.Dock="Right" Content="Instalar IPBan..." Margin="12,0,0,0"
+                        Visibility="Collapsed" FontWeight="SemiBold" Click="InstallIPBan_Click"/>
+                <TextBlock x:Name="BannerText" TextWrapping="Wrap" Foreground="#5C4A00" VerticalAlignment="Center"/>
+            </DockPanel>
         </Border>
         <TabControl x:Name="Tabs" Margin="8"/>
     </DockPanel>

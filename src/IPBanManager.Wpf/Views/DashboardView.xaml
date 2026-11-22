@@ -20,6 +20,13 @@
             <Run Text="IPs bloqueados no firewall: " FontWeight="SemiBold"/>
             <Run x:Name="CountText" Text="0"/>
         </TextBlock>
+        <StackPanel x:Name="VersionPanel" Orientation="Horizontal" Margin="0,10,0,0" Visibility="Collapsed">
+            <TextBlock FontSize="14" VerticalAlignment="Center">
+                <Run Text="Versão do IPBan: " FontWeight="SemiBold"/>
+                <Run x:Name="VersionText"/>
+            </TextBlock>
+            <Button x:Name="UpgradeButton" Margin="12,0,0,0" Visibility="Collapsed" Click="Upgrade_Click"/>
+        </StackPanel>
         <TextBlock Style="{StaticResource Hint}" Margin="0,16,0,0"
                    Text="Alterações em configurações são aplicadas automaticamente pelo serviço; reinicie apenas se necessário."/>
     </StackPanel>

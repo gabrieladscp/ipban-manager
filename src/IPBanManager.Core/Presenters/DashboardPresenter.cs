@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using IPBanManager.Core.Abstractions;
 using IPBanManager.Core.Models;
+using IPBanManager.Core.Provisioning;
 using IPBanManager.Core.Views;
 
 namespace IPBanManager.Core.Presenters;
@@ -18,19 +19,45 @@ public class DashboardPresenter : PresenterBase<IDashboardView>
     private bool _refreshing;
     private int _pollsSinceCount;
 
+    private readonly IIPBanSetupLauncher _setup;
+
     public DashboardPresenter(IDashboardView view, IInstallationLocator locator, IServiceController service,
-        IBannedIpProvider banned, IConfigurationRepository config, IAppLogger logger)
+        IBannedIpProvider banned, IConfigurationRepository config, IAppLogger logger, IIPBanSetupLauncher setup = null)
         : base(view, locator, logger)
     {
         _service = service;
         _banned = banned;
         _config = config;
+        _setup = setup;
 
         View.StartRequested += (s, e) => OnEvent(() => ControlAsync(_service.Start));
         View.StopRequested += (s, e) => OnEvent(ConfirmedStopAsync);
         View.RestartRequested += (s, e) => OnEvent(() => ControlAsync(_service.Restart));
         View.RefreshRequested += (s, e) => OnEvent(RefreshAsync);
         View.PollRequested += (s, e) => OnEvent(PollAsync);
+        View.UpgradeIPBanRequested += (s, e) => OnEvent(UpgradeAsync);
+    }
+
+    private async Task UpgradeAsync()
+    {
+        if (_setup == null || _busy) return;
+        if (_setup.ShowSetup()) await RefreshCoreAsync(includeBannedCount: true);
+    }
+
+    private async Task RefreshVersionAsync()
+    {
+        if (_setup == null) return;
+        try
+        {
+            var status = await Task.Run(() => _setup.Inspect());
+            if (!status.ServiceInstalled) { View.ShowIPBanVersion(null, null); return; }
+            View.ShowIPBanVersion(status.InstalledVersion?.ToString(3) ?? "desconhecida",
+                status.CanUpgrade ? status.BundledVersion.ToString(3) : null);
+        }
+        catch (Exception ex)
+        {
+            Logger.Warn("Versão do IPBan indisponível: " + ex.Message);
+        }
     }
 
     public override Task RefreshAsync() => RefreshCoreAsync(includeBannedCount: true);
@@ -51,7 +78,11 @@ public class DashboardPresenter : PresenterBase<IDashboardView>
         {
             var state = await Task.Run(() => _service.GetState());
             View.ShowState(state, Describe(state));
-            if (includeBannedCount) await RefreshBannedCountAsync();
+            if (includeBannedCount)
+            {
+                await RefreshBannedCountAsync();
+                await RefreshVersionAsync();
+            }
         }
         finally { _refreshing = false; }
     }

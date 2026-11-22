@@ -80,6 +80,13 @@ public class InstallationLocator : IInstallationLocator
     /// <summary>Extrai a pasta do executável de um ImagePath (com ou sem aspas/argumentos).</summary>
     public static string ParseExecutableDirectory(string imagePath)
     {
+        var exe = ParseExecutablePath(imagePath);
+        return exe == null ? null : Path.GetDirectoryName(exe);
+    }
+
+    /// <summary>Extrai o caminho do executável de um ImagePath (com ou sem aspas/argumentos).</summary>
+    public static string ParseExecutablePath(string imagePath)
+    {
         if (string.IsNullOrWhiteSpace(imagePath)) return null;
         var text = imagePath.Trim();
         string exe;
@@ -93,6 +100,6 @@ public class InstallationLocator : IInstallationLocator
             var idx = text.IndexOf(".exe", StringComparison.OrdinalIgnoreCase);
             exe = idx > 0 ? text.Substring(0, idx + 4) : text;
         }
-        return Path.GetDirectoryName(exe);
+        return exe;
     }
 }

@@ -11,14 +11,17 @@ namespace IPBanManager.Wpf;
 internal static class Program
 {
     [STAThread]
-    private static void Main()
+    private static int Main(string[] args)
     {
         VelopackApp.Build()
             .SetAutoApplyOnStartup(true) // versão já baixada é instalada na próxima abertura
             .Run();
 
+        // Instalação do IPBan sem interface (implantação em massa / instalador offline).
+        if (IPBanCommandLine.IsRequested(args)) return IPBanCommandLine.Run(args);
+
         var app = new App();
         app.InitializeComponent();
-        app.Run();
+        return app.Run();
     }
 }

@@ -24,6 +24,14 @@ public partial class MainWindow : Window, IMainView, IStatusSink, IUnsavedChange
     }
 
     public event EventHandler ChangeDirectoryRequested;
+    public event EventHandler InstallIPBanRequested;
+
+    public bool CanInstallIPBan
+    {
+        set => InstallIPBanButton.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    private void InstallIPBan_Click(object sender, RoutedEventArgs e) => InstallIPBanRequested?.Invoke(this, EventArgs.Empty);
 
     public string InstallDirectory { set => DirectoryText.Text = value; }
 

@@ -5,6 +5,21 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ## [Unreleased]
 
+### Adicionado
+- **Instalação completa do IPBan**: o aplicativo traz o IPBan oficial 4.1.0 embutido (SHA-256 conferido na compilação
+  e antes de instalar) e o instala/configura sozinho: arquivos em `Program Files\IPBan`, auditoria de logon do Windows,
+  serviço com início automático e reinício em falha, whitelist com o IP da sessão de Área de Trabalho Remota e
+  checagem do Firewall do Windows. Ver `docs/INSTALACAO.md`.
+- Assistente "Instalar e configurar o IPBan", aberto automaticamente quando o servidor não tem IPBan, e botão
+  "Instalar IPBan..." na faixa de aviso.
+- Painel mostra a versão do IPBan e oferece atualizá-lo quando o embutido for mais novo (preserva configuração, banco e
+  logs; guarda os binários antigos e os restaura se o serviço novo não iniciar).
+- Linha de comando `IPBanManager.exe --install-ipban [--whitelist=...]` para implantação em massa.
+- Instalador offline (Inno) instala/atualiza o IPBan (opção marcada por padrão; `/WHITELIST=` no modo silencioso).
+
+### Corrigido
+- O aviso de "IPBan não encontrado" do instalador Inno nunca aparecia (nome do evento errado no script).
+
 ## [1.0.3] - 2026-11-22
 
 ### Alterado

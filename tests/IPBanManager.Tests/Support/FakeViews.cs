@@ -79,6 +79,30 @@ internal sealed class FakeMainView : FakeViewBase, IMainView
     public string PickDirectory(string current) => PickedDirectory;
     public event EventHandler ChangeDirectoryRequested;
     public void RaiseChangeDirectory() => ChangeDirectoryRequested?.Invoke(this, EventArgs.Empty);
+    public bool CanInstallIPBan { get; set; }
+    public event EventHandler InstallIPBanRequested;
+    public void RaiseInstallIPBan() => InstallIPBanRequested?.Invoke(this, EventArgs.Empty);
+}
+
+internal sealed class FakeSetupView : FakeViewBase, IIPBanSetupView
+{
+    public string Heading { get; private set; }
+    public string ActionLabel { get; private set; }
+    public string WhitelistText { get; set; } = "";
+    public List<string> Progress { get; } = new List<string>();
+    public bool Busy { get; set; }
+    public bool? Finished { get; private set; }
+    public event EventHandler InstallRequested;
+
+    public void ShowPlan(string heading, string description, string actionLabel)
+    {
+        Heading = heading;
+        ActionLabel = actionLabel;
+    }
+
+    public void AppendProgress(string line) { lock (Progress) Progress.Add(line); }
+    public void ShowFinished(bool success) => Finished = success;
+    public void RaiseInstall() => InstallRequested?.Invoke(this, EventArgs.Empty);
 }
 
 internal sealed class FakeDashboardView : FakeViewBase, IDashboardView
@@ -123,6 +147,11 @@ internal sealed class FakeDashboardView : FakeViewBase, IDashboardView
             throw new TimeoutException($"A View não recebeu o estado {state}.");
     }
     public void ShowBannedCount(int count) => LastCount = count;
+    public string InstalledVersion { get; private set; }
+    public string UpgradeTo { get; private set; }
+    public void ShowIPBanVersion(string installed, string upgradeTo) { InstalledVersion = installed; UpgradeTo = upgradeTo; }
+    public event EventHandler UpgradeIPBanRequested;
+    public void RaiseUpgrade() => UpgradeIPBanRequested?.Invoke(this, EventArgs.Empty);
     public void RaiseStart() => StartRequested?.Invoke(this, EventArgs.Empty);
     public void RaiseStop() => StopRequested?.Invoke(this, EventArgs.Empty);
     public void RaiseRestart() => RestartRequested?.Invoke(this, EventArgs.Empty);

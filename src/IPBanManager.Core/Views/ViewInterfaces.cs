@@ -26,6 +26,27 @@ public interface IMainView : IView
     bool InstallValid { set; }
     string PickDirectory(string current);
     event EventHandler ChangeDirectoryRequested;
+
+    /// <summary>Exibe o botão "Instalar IPBan" (IPBan ausente e pacote disponível).</summary>
+    bool CanInstallIPBan { set; }
+    event EventHandler InstallIPBanRequested;
+}
+
+/// <summary>Assistente que instala/atualiza e configura o IPBan.</summary>
+public interface IIPBanSetupView : IView
+{
+    void ShowPlan(string heading, string description, string actionLabel);
+
+    /// <summary>Endereços da whitelist, um por linha.</summary>
+    string WhitelistText { get; set; }
+
+    void AppendProgress(string line);
+    bool Busy { set; }
+
+    /// <summary>Fim da execução: troca os botões por "Fechar".</summary>
+    void ShowFinished(bool success);
+
+    event EventHandler InstallRequested;
 }
 
 public interface IDashboardView : IView
@@ -42,6 +63,10 @@ public interface IDashboardView : IView
 
     /// <summary>Verificação periódica e leve (só o status do serviço).</summary>
     event EventHandler PollRequested;
+
+    /// <summary>Versão do IPBan; <paramref name="upgradeTo"/> não nulo exibe o botão de atualização.</summary>
+    void ShowIPBanVersion(string installed, string upgradeTo);
+    event EventHandler UpgradeIPBanRequested;
 }
 
 /// <summary>Seção da configuração: a View lê/escreve somente os campos que lhe pertencem.</summary>
