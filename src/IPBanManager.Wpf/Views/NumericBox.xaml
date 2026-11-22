@@ -1,0 +1,16 @@
+<UserControl x:Class="IPBanManager.Wpf.Views.NumericBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:IPBanManager.Wpf.Views"
+             HorizontalAlignment="Left">
+    <StackPanel Orientation="Horizontal">
+        <TextBox x:Name="Box" Width="70" MaxLength="7" HorizontalContentAlignment="Right"
+                 local:InputFilter.Kind="Digits" LostFocus="Box_LostFocus" PreviewKeyDown="Box_PreviewKeyDown"
+                 MouseWheel="Box_MouseWheel"/>
+        <StackPanel Margin="2,0,0,0">
+            <RepeatButton Content="▲" Width="22" Height="13" Padding="0" FontSize="7" Click="Up_Click" Focusable="False" ToolTip="Aumentar"/>
+            <RepeatButton Content="▼" Width="22" Height="13" Padding="0" FontSize="7" Click="Down_Click" Focusable="False" ToolTip="Diminuir"/>
+        </StackPanel>
+        <TextBlock x:Name="RangeText" Foreground="#888" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0"/>
+    </StackPanel>
+</UserControl>

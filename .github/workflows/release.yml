@@ -197,6 +197,54 @@ jobs:
           }
           Get-ChildItem releases | Select-Object Name, Length | Format-Table -AutoSize
 
+      # ---------------------------------------------------------------- instalador offline (Inno Setup)
+      # Mesmo build do pacote Velopack, num instalador tradicional (Program Files, sem atualização automática) para
+      # servidores sem acesso ao GitHub, com AppLocker ou implantação silenciosa em massa. Também instala o IPBan.
+      - name: Instalador offline (Inno Setup)
+        shell: pwsh
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+          SIGN_PFX_BASE64: ${{ secrets.SIGN_PFX_BASE64 }}
+          SIGN_PFX_PASSWORD: ${{ secrets.SIGN_PFX_PASSWORD }}
+          SIGN_TIMESTAMP_URL: ${{ vars.SIGN_TIMESTAMP_URL || 'http://timestamp.digicert.com' }}
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) {
+            choco install innosetup --no-progress -y
+            if ($LASTEXITCODE -ne 0) { Write-Error 'Falha ao instalar o Inno Setup.'; exit 1 }
+          }
+
+          # Pasta de origem: o build publicado, sem símbolos de depuração.
+          $staging = Join-Path $env:RUNNER_TEMP 'offline-app'
+          Remove-Item $staging -Recurse -Force -ErrorAction SilentlyContinue
+          Copy-Item publish $staging -Recurse
+          Get-ChildItem $staging -Recurse -Include *.pdb | Remove-Item -Force
+          if (-not (Test-Path "$staging\IPBan\IPBan-Windows-x64.zip")) { Write-Error 'Pacote do IPBan ausente no build.'; exit 1 }
+
+          $numeric = $env:VERSION.Split('-')[0]
+          $name = "IPBanManager-$env:VERSION-Offline-Setup"
+          New-Item -ItemType Directory -Force offline | Out-Null
+          & $iscc /Q "/DAppVersion=$env:VERSION" "/DNumericVersion=$numeric" "/DStagingDir=$staging" `
+            "/O$((Resolve-Path offline).Path)" "/F$name" installer/IPBanManager.iss
+          if ($LASTEXITCODE -ne 0) { Write-Error 'Falha ao compilar o instalador offline.'; exit 1 }
+          $setup = "offline/$name.exe"
+
+          if ($env:SIGN_PFX_BASE64) {
+            $pfx = Join-Path $env:RUNNER_TEMP 'codesign-offline.pfx'
+            [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String($env:SIGN_PFX_BASE64))
+            try {
+              $signtool = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\*\x64\signtool.exe" |
+                Sort-Object FullName -Descending | Select-Object -First 1
+              if (-not $signtool) { Write-Error 'signtool.exe não encontrado no runner.'; exit 1 }
+              & $signtool.FullName sign /f $pfx /p $env:SIGN_PFX_PASSWORD /fd sha256 /tr $env:SIGN_TIMESTAMP_URL /td sha256 $setup
+              if ($LASTEXITCODE -ne 0) { Write-Error 'Falha ao assinar o instalador offline.'; exit 1 }
+            } finally { Remove-Item $pfx -Force -ErrorAction SilentlyContinue }
+            "Assinatura: $((Get-AuthenticodeSignature $setup).SignerCertificate.Subject)"
+          }
+          Get-Item $setup | Select-Object Name, Length | Format-Table -AutoSize
+          "offline_setup=$setup" >> $env:GITHUB_OUTPUT
+        id: offline
+
       # ---------------------------------------------------------------- integridade
       - name: Gerar SHA256SUMS.txt
         shell: pwsh
@@ -207,17 +255,16 @@ jobs:
           # Somente os arquivos IMUTÁVEIS DESTA versão. Ficam de fora:
           #  - pacotes de versões anteriores (o `vpk download` os traz para a pasta, mas não são republicados);
           #  - releases.<canal>.json: o `vpk upload --merge` o reescreve ao publicar (une com o feed anterior).
-          Push-Location releases
-          $expected = @("IPBanManager-$env:CHANNEL-Setup.exe", "IPBanManager-$env:CHANNEL-Portable.zip",
-                        "IPBanManager-$env:VERSION-$env:CHANNEL-full.nupkg")
+          $expected = @("releases/IPBanManager-$env:CHANNEL-Setup.exe", "releases/IPBanManager-$env:CHANNEL-Portable.zip",
+                        "releases/IPBanManager-$env:VERSION-$env:CHANNEL-full.nupkg",
+                        "offline/IPBanManager-$env:VERSION-Offline-Setup.exe")
           $missing = $expected | Where-Object { -not (Test-Path $_) }
           if ($missing) { Write-Error "Arquivos esperados não foram gerados: $($missing -join ', ')"; exit 1 }
           $expected | ForEach-Object {
             $h = (Get-FileHash $_ -Algorithm SHA256).Hash.ToLower()
-            "$h *$_"
-          } | Set-Content -Path SHA256SUMS.txt -Encoding ascii
-          Get-Content SHA256SUMS.txt
-          Pop-Location
+            "$h *$(Split-Path $_ -Leaf)"
+          } | Set-Content -Path releases/SHA256SUMS.txt -Encoding ascii
+          Get-Content releases/SHA256SUMS.txt
           '```' >> $env:GITHUB_STEP_SUMMARY
           Get-Content releases/SHA256SUMS.txt >> $env:GITHUB_STEP_SUMMARY
           '```' >> $env:GITHUB_STEP_SUMMARY
@@ -230,12 +277,15 @@ jobs:
             releases/IPBanManager-${{ steps.ver.outputs.channel }}-Setup.exe
             releases/IPBanManager-${{ steps.ver.outputs.channel }}-Portable.zip
             releases/IPBanManager-${{ steps.ver.outputs.version }}-${{ steps.ver.outputs.channel }}-full.nupkg
+            ${{ steps.offline.outputs.offline_setup }}
 
       - name: Guardar artefatos do build
         uses: actions/upload-artifact@v7
         with:
           name: release-${{ steps.ver.outputs.version }}
-          path: releases/*
+          path: |
+            releases/*
+            offline/*
           retention-days: 30
 
       # ---------------------------------------------------------------- publicação
@@ -256,9 +306,12 @@ jobs:
             --publish --merge @pre
           if ($LASTEXITCODE -ne 0) { exit 1 }
 
-      - name: Anexar SHA256SUMS.txt à Release
+      - name: Anexar instalador offline e SHA256SUMS.txt à Release
         if: steps.ver.outputs.publish == 'true'
         shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload ${{ steps.ver.outputs.tag }} releases/SHA256SUMS.txt --clobber --repo ${{ github.repository }}
+        run: |
+          gh release upload ${{ steps.ver.outputs.tag }} ${{ steps.offline.outputs.offline_setup }} releases/SHA256SUMS.txt `
+            --clobber --repo ${{ github.repository }}
+          if ($LASTEXITCODE -ne 0) { exit 1 }

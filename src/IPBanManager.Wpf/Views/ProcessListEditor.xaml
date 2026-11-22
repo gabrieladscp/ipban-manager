@@ -1,0 +1,25 @@
+<UserControl x:Class="IPBanManager.Wpf.Views.ProcessListEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:IPBanManager.Wpf.Views">
+    <StackPanel>
+        <Border x:Name="Form" Style="{StaticResource FormPanel}">
+            <StackPanel>
+                <DockPanel Margin="0,0,0,6">
+                    <TextBlock DockPanel.Dock="Left" Text="Programa:" Width="85" VerticalAlignment="Center"/>
+                    <Button DockPanel.Dock="Right" Content="Procurar..." MinWidth="0" Margin="6,0,0,0" Click="Browse_Click"/>
+                    <TextBox x:Name="PathBox" IsReadOnly="True" Background="#FAFAFA"
+                             ToolTip="Clique em Procurar... para escolher o programa (.exe, .bat, .cmd ou .ps1)"/>
+                </DockPanel>
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Left" Text="Argumentos:" Width="85" VerticalAlignment="Center"/>
+                    <TextBox x:Name="ArgsBox" FontFamily="Consolas"/>
+                </DockPanel>
+                <WrapPanel x:Name="VariablesPanel" Margin="85,4,0,0">
+                    <TextBlock Text="Inserir:" Foreground="#666" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                </WrapPanel>
+            </StackPanel>
+        </Border>
+        <local:RecordListEditor x:Name="Editor" Height="140"/>
+    </StackPanel>
+</UserControl>

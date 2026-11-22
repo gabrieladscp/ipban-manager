@@ -11,14 +11,16 @@
                         <WrapPanel>
                             <StackPanel Style="{StaticResource Field}" ToolTip="Falhas de login antes de bloquear o IP.">
                                 <TextBlock Style="{StaticResource FieldLabel}" Text="Tentativas antes do bloqueio"/>
-                                <TextBox x:Name="FailedAttempts" Width="80" HorizontalAlignment="Left"/>
+                                <local:NumericBox x:Name="FailedAttempts" Minimum="1" Maximum="1000"/>
                             </StackPanel>
-                            <StackPanel Style="{StaticResource Field}" Width="420"
-                                        ToolTip="Duração do bloqueio no formato DD:HH:MM:SS. Vários valores separados por vírgula, em ordem crescente (a cada reincidência o bloqueio fica maior). 00:00:00:00 = bloqueio máximo (9999 dias).">
-                                <TextBlock Style="{StaticResource FieldLabel}" Text="Tempo de bloqueio (DD:HH:MM:SS)"/>
-                                <TextBox x:Name="BanTime"/>
-                                <TextBlock Style="{StaticResource Hint}" Margin="0,3,0,0"
-                                           Text="Ex.: 01:00:00:00 = 1 dia. Escalonado: 00:01:00:00,01:00:00:00 (1 h, depois 1 dia)."/>
+                            <StackPanel Style="{StaticResource Field}" Width="470"
+                                        ToolTip="A cada reincidência o IP fica bloqueado pelo próximo tempo da lista (ordenada automaticamente). 0 em tudo = bloqueio máximo.">
+                                <TextBlock Style="{StaticResource FieldLabel}" Text="Tempo de bloqueio"/>
+                                <TextBlock Style="{StaticResource Hint}" Text="Um tempo = bloqueio fixo. Vários = escalonado (1ª vez o menor, reincidências os maiores)."/>
+                                <Border x:Name="BanTimeForm" Style="{StaticResource FormPanel}">
+                                    <local:DurationBox x:Name="BanTimeInput"/>
+                                </Border>
+                                <local:RecordListEditor x:Name="BanTime" Height="150"/>
                             </StackPanel>
                         </WrapPanel>
                         <WrapPanel>
@@ -52,15 +54,17 @@
                         <WrapPanel Margin="0,10,0,0">
                             <StackPanel Style="{StaticResource Field}" ToolTip="Prefixo dos nomes das regras criadas no Windows Firewall. Alterar faz o IPBan criar novas regras.">
                                 <TextBlock Style="{StaticResource FieldLabel}" Text="Prefixo das regras de firewall"/>
-                                <TextBox x:Name="Prefix"/>
+                                <TextBox x:Name="Prefix" MaxLength="64" local:InputFilter.Kind="RuleName"/>
+                                <TextBlock Style="{StaticResource Hint}" Margin="0,3,0,0" Text="Letras, números, _ e -."/>
                             </StackPanel>
                             <StackPanel Style="{StaticResource Field}">
                                 <TextBlock Style="{StaticResource FieldLabel}" Text="URL do IP externo"/>
-                                <TextBox x:Name="ExternalUrl"/>
+                                <TextBox x:Name="ExternalUrl" local:InputFilter.Kind="NoSpaces"/>
+                                <TextBlock Style="{StaticResource Hint}" Margin="0,3,0,0" Text="Endereço completo (https://...) ou vazio."/>
                             </StackPanel>
                             <StackPanel Style="{StaticResource Field}">
                                 <TextBlock Style="{StaticResource FieldLabel}" Text="Chave da API IPThreat (opcional)"/>
-                                <TextBox x:Name="ApiKey"/>
+                                <TextBox x:Name="ApiKey" local:InputFilter.Kind="NoSpaces"/>
                             </StackPanel>
                         </WrapPanel>
                     </StackPanel>
@@ -70,15 +74,15 @@
                     <WrapPanel>
                         <StackPanel Style="{StaticResource Field}" ToolTip="Corta o nome de usuário no primeiro destes caracteres (ex.: @ para e-mails).">
                             <TextBlock Style="{StaticResource FieldLabel}" Text="Caracteres de truncamento"/>
-                            <TextBox x:Name="Truncate"/>
+                            <TextBox x:Name="Truncate" MaxLength="10" local:InputFilter.Kind="NoSpaces"/>
                         </StackPanel>
                         <StackPanel Style="{StaticResource Field}">
                             <TextBlock Style="{StaticResource FieldLabel}" Text="Distância mínima de edição (whitelist)"/>
-                            <TextBox x:Name="EditDistance" Width="80" HorizontalAlignment="Left"/>
+                            <local:NumericBox x:Name="EditDistance" Minimum="0" Maximum="20"/>
                         </StackPanel>
                         <StackPanel Style="{StaticResource Field}">
                             <TextBlock Style="{StaticResource FieldLabel}" Text="Tentativas para usuários da whitelist"/>
-                            <TextBox x:Name="UserAttempts" Width="80" HorizontalAlignment="Left"/>
+                            <local:NumericBox x:Name="UserAttempts" Minimum="1" Maximum="1000"/>
                         </StackPanel>
                     </WrapPanel>
                 </GroupBox>

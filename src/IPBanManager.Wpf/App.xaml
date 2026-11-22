@@ -28,7 +28,14 @@
         </Style>
         <Style TargetType="GroupBox">
             <Setter Property="Padding" Value="10"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
+            <!-- Negrito só no título (antes valia para todo o conteúdo do grupo). -->
+            <Setter Property="HeaderTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" FontWeight="SemiBold"/>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
         <Style x:Key="FieldLabel" TargetType="TextBlock">
             <Setter Property="Margin" Value="0,0,0,2"/>
@@ -43,6 +50,13 @@
         <Style x:Key="Field" TargetType="StackPanel">
             <Setter Property="Width" Value="320"/>
             <Setter Property="Margin" Value="0,0,16,10"/>
+        </Style>
+        <Style x:Key="FormPanel" TargetType="Border">
+            <Setter Property="Background" Value="#F7F7F7"/>
+            <Setter Property="BorderBrush" Value="#DDD"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="3"/>
+            <Setter Property="Padding" Value="8"/>
         </Style>
         <Style x:Key="Mono" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
             <Setter Property="FontFamily" Value="Consolas"/>

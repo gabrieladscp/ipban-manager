@@ -4,10 +4,16 @@
 #ifndef AppVersion
   #define AppVersion "1.0.0"
 #endif
+; Versão numérica do arquivo (sem o sufixo -beta.N, que o Windows não aceita em VersionInfo).
+#ifndef NumericVersion
+  #define NumericVersion AppVersion
+#endif
+#ifndef StagingDir
+  #define StagingDir "..\artifacts\app"
+#endif
 #define AppName      "IPBan Manager"
 #define AppExe       "IPBanManager.exe"
 #define AppPublisher "Skytins"
-#define StagingDir   "..\artifacts\app"
 
 [Setup]
 ; AppId fixo: garante que novas versões atualizem a instalação existente.
@@ -16,7 +22,7 @@ AppName={#AppName}
 AppVersion={#AppVersion}
 AppVerName={#AppName} {#AppVersion}
 AppPublisher={#AppPublisher}
-VersionInfoVersion={#AppVersion}
+VersionInfoVersion={#NumericVersion}
 VersionInfoProductName={#AppName}
 VersionInfoDescription=Instalador do {#AppName}
 VersionInfoCompany={#AppPublisher}

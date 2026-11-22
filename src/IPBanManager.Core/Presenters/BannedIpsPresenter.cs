@@ -35,15 +35,17 @@ public class BannedIpsPresenter : PresenterBase<IBannedIpsView>
     /// <summary>Banimento manual = inclusão na blacklist (o IPBan aplica no próximo ciclo).</summary>
     public async Task BanAsync()
     {
-        var address = (View.ManualBanAddress ?? "").Trim();
-        if (!IpEntry.IsIpOrCidr(address))
-        {
-            View.ShowError("Informe um IP (v4 ou v6) ou uma faixa CIDR válidos. Exemplos: 203.0.113.7 ou 198.51.100.0/24.");
-            return;
-        }
-        if (IpEntry.IsLoopbackOrUnspecified(address))
+        var raw = (View.ManualBanAddress ?? "").Trim();
+        if (IpEntry.IsLoopbackOrUnspecified(raw))
         {
             View.ShowError("Endereços de loopback/não especificados não podem ser bloqueados.");
+            return;
+        }
+        // Mesma regra dos campos de lista: IP com 4 números de 0 a 255, IPv6 ou faixa CIDR (normalizado).
+        var error = ListEntryRules.Validate(ListEntryKind.IpAddress, raw, null, out var address);
+        if (error != null)
+        {
+            View.ShowError(error);
             return;
         }
         if (IpEntry.IsWideRange(address) &&

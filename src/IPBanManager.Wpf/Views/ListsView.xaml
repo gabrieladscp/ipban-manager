@@ -12,30 +12,35 @@
                 <RowDefinition Height="*"/><RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <DockPanel Grid.Column="0" Margin="0,0,8,0">
+            <DockPanel Grid.Column="0" Margin="0,0,12,0">
                 <TextBlock DockPanel.Dock="Top" Style="{StaticResource FieldLabel}" Text="Whitelist (nunca bloquear)"/>
-                <TextBlock DockPanel.Dock="Top" Style="{StaticResource Hint}" Text="Um por linha: IP, faixa CIDR, nome DNS ou URL. Inclua aqui o IP de quem administra o servidor."/>
-                <TextBox x:Name="Whitelist" Style="{StaticResource Mono}"/>
+                <TextBlock DockPanel.Dock="Top" Style="{StaticResource Hint}" TextWrapping="Wrap" Margin="0,0,0,6"
+                           Text="IP, faixa CIDR ou domínio. Inclua o IP de quem administra o servidor."/>
+                <local:EntryListEditor x:Name="Whitelist" Kind="Address" PlaceholderText="ex.: 203.0.113.10"/>
             </DockPanel>
-            <DockPanel Grid.Column="1" Margin="0,0,8,0">
+            <DockPanel Grid.Column="1" Margin="0,0,12,0">
                 <TextBlock DockPanel.Dock="Top" Style="{StaticResource FieldLabel}" Text="Blacklist (sempre bloquear)"/>
-                <TextBlock DockPanel.Dock="Top" Style="{StaticResource Hint}" Text="Um por linha. A whitelist tem precedência sobre a blacklist."/>
-                <TextBox x:Name="Blacklist" Style="{StaticResource Mono}"/>
+                <TextBlock DockPanel.Dock="Top" Style="{StaticResource Hint}" TextWrapping="Wrap" Margin="0,0,0,6"
+                           Text="IP, faixa CIDR ou domínio. A whitelist tem precedência sobre a blacklist."/>
+                <local:EntryListEditor x:Name="Blacklist" Kind="Address" PlaceholderText="ex.: 198.51.100.0/24 ou exemplo.com"/>
             </DockPanel>
             <DockPanel Grid.Column="2">
                 <TextBlock DockPanel.Dock="Top" Style="{StaticResource FieldLabel}" Text="Whitelist de usuários"/>
-                <TextBlock DockPanel.Dock="Top" Style="{StaticResource Hint}" Text="Um por linha. Usuários válidos conhecidos."/>
-                <TextBox x:Name="UserWhitelist" Style="{StaticResource Mono}"/>
+                <TextBlock DockPanel.Dock="Top" Style="{StaticResource Hint}" TextWrapping="Wrap" Margin="0,0,0,6"
+                           Text="Usuários válidos conhecidos (sem espaços)."/>
+                <local:EntryListEditor x:Name="UserWhitelist" Kind="UserName" PlaceholderText="ex.: administrador"/>
             </DockPanel>
 
-            <StackPanel Grid.Row="1" Grid.ColumnSpan="3" Margin="0,12,0,0">
-                <TextBlock Style="{StaticResource FieldLabel}" Text="Regex da whitelist de IPs (opcional)"/>
-                <TextBox x:Name="WhitelistRegex" Margin="0,0,0,8"/>
-                <TextBlock Style="{StaticResource FieldLabel}" Text="Regex da blacklist de IPs (opcional)"/>
-                <TextBox x:Name="BlacklistRegex" Margin="0,0,0,8"/>
-                <TextBlock Style="{StaticResource FieldLabel}" Text="Regex da whitelist de usuários (opcional)"/>
-                <TextBox x:Name="UserWhitelistRegex"/>
-            </StackPanel>
+            <Expander x:Name="RegexExpander" Grid.Row="1" Grid.ColumnSpan="3" Margin="0,12,0,0" Header="Avançado: expressões regulares (opcional)">
+                <StackPanel Margin="0,8,0,0">
+                    <TextBlock Style="{StaticResource FieldLabel}" Text="Regex da whitelist de IPs"/>
+                    <TextBox x:Name="WhitelistRegex" Margin="0,0,0,8"/>
+                    <TextBlock Style="{StaticResource FieldLabel}" Text="Regex da blacklist de IPs"/>
+                    <TextBox x:Name="BlacklistRegex" Margin="0,0,0,8"/>
+                    <TextBlock Style="{StaticResource FieldLabel}" Text="Regex da whitelist de usuários"/>
+                    <TextBox x:Name="UserWhitelistRegex"/>
+                </StackPanel>
+            </Expander>
         </Grid>
     </DockPanel>
 </local:ConfigSectionViewBase>

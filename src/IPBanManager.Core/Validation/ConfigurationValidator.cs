@@ -27,6 +27,10 @@ public class ConfigurationValidator
 
         if (string.IsNullOrWhiteSpace(c.FirewallRulePrefix))
             errors.Add("Prefixo das regras de firewall é obrigatório.");
+        else if (RuleName.Validate("Prefixo das regras de firewall", c.FirewallRulePrefix) is string prefixError)
+            errors.Add(prefixError);
+        if (UrlRules.Validate("URL do IP externo", c.ExternalIPAddressUrl, required: false) is string urlError)
+            errors.Add(urlError);
 
         RequireRegex("Regex da whitelist", c.WhitelistRegex, errors);
         RequireRegex("Regex da blacklist", c.BlacklistRegex, errors);
@@ -41,6 +45,11 @@ public class ConfigurationValidator
 
     private static void ValidateBanTime(string value, List<string> errors)
     {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            errors.Add("Tempo de bloqueio: adicione ao menos um tempo à lista.");
+            return;
+        }
         var spans = new List<TimeSpan>();
         foreach (var part in (value ?? "").Split(',').Select(p => p.Trim()))
         {

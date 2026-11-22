@@ -26,8 +26,9 @@ aba **Atualizações**: **Stable** (padrão) e **Beta**. Se uma versão nova nã
 anterior. Configurações e dados ficam fora da pasta do programa e são preservados. Detalhes em
 [docs/AUTO-UPDATE.md](docs/AUTO-UPDATE.md); como publicar versões em [docs/RELEASING.md](docs/RELEASING.md).
 
-> O instalador do Inno Setup (`build-installer.ps1`, pasta `installer/`) continua disponível para uso interno,
-> mas instalações feitas por ele **não** se atualizam sozinhas. Para produção use o instalador das Releases.
+> **Instalador offline**: cada Release traz também `IPBanManager-<versão>-Offline-Setup.exe` (Inno Setup), para
+> servidores sem acesso ao GitHub ou implantação silenciosa em massa. Instalações feitas por ele **não** se
+> atualizam sozinhas. Veja [docs/INSTALACAO.md](docs/INSTALACAO.md).
 
 ## Funcionalidades
 

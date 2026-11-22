@@ -5,27 +5,85 @@
     <DockPanel Margin="4">
         <local:SaveBar DockPanel.Dock="Bottom" Margin="8,0,0,8"/>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="8">
-                <TextBlock Style="{StaticResource FieldLabel}" Text="Regras de firewall personalizadas"/>
-                <TextBlock Style="{StaticResource Hint}"
-                           Text="Uma por linha: nome;allow|block;lista de IPs;portas;regex da plataforma. Ex.: RedisAllowIP;allow;10.0.0.1,192.168.1.0/24;6379;."/>
-                <TextBox x:Name="FirewallRules" Style="{StaticResource Mono}" Height="90" Margin="0,0,0,12"/>
+            <StackPanel Margin="8" MaxWidth="1100" HorizontalAlignment="Left">
+                <GroupBox Header="Regras de firewall personalizadas" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource Hint}"
+                                   Text="Libera ou bloqueia IPs em portas específicas, independentemente das falhas de login (ex.: liberar o Redis só para a rede interna)."/>
+                        <Border x:Name="FirewallForm" Style="{StaticResource FormPanel}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="160"/>
+                                        <ColumnDefinition Width="110"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="140"/>
+                                        <ColumnDefinition Width="100"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions><RowDefinition/><RowDefinition/></Grid.RowDefinitions>
+                                    <TextBlock Text="Nome" FontWeight="SemiBold"/>
+                                    <TextBlock Grid.Column="1" Text="Ação" FontWeight="SemiBold"/>
+                                    <TextBlock Grid.Column="2" Text="IPs ou faixas (separados por vírgula)" FontWeight="SemiBold"/>
+                                    <TextBlock Grid.Column="3" Text="Portas (vazio = todas)" FontWeight="SemiBold"/>
+                                    <TextBlock Grid.Column="4" Text="Sistema" FontWeight="SemiBold"/>
+                                    <TextBox x:Name="RuleNameBox" Grid.Row="1" Margin="0,2,6,0" MaxLength="64" local:InputFilter.Kind="RuleName"
+                                             ToolTip="Letras, números, _ e -"/>
+                                    <ComboBox x:Name="RuleAction" Grid.Row="1" Grid.Column="1" Margin="0,2,6,0" SelectedIndex="0">
+                                        <ComboBoxItem Content="Permitir"/>
+                                        <ComboBoxItem Content="Bloquear"/>
+                                    </ComboBox>
+                                    <TextBox x:Name="RuleIps" Grid.Row="1" Grid.Column="2" Margin="0,2,6,0" FontFamily="Consolas"
+                                             local:InputFilter.Kind="IpList" ToolTip="Ex.: 10.0.0.1,192.168.1.0/24"/>
+                                    <TextBox x:Name="RulePorts" Grid.Row="1" Grid.Column="3" Margin="0,2,6,0" FontFamily="Consolas"
+                                             local:InputFilter.Kind="Ports" ToolTip="Ex.: 6379 ou 80,443 ou 8000-8100"/>
+                                    <ComboBox x:Name="RulePlatform" Grid.Row="1" Grid.Column="4" Margin="0,2,0,0"
+                                              DisplayMemberPath="Item2" SelectedValuePath="Item1"/>
+                                </Grid>
+                        </Border>
+                        <local:RecordListEditor x:Name="FirewallRules" Height="160"/>
+                    </StackPanel>
+                </GroupBox>
 
-                <TextBlock Style="{StaticResource FieldLabel}" Text="Listas externas de bloqueio (URL)"/>
-                <TextBlock Style="{StaticResource Hint}"
-                           Text="Uma por linha: prefixo,intervalo DD:HH:MM:SS,URL,máximo. Ex.: EmergingThreats,01:00:00:00,https://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt,10000"/>
-                <TextBox x:Name="UriRules" Style="{StaticResource Mono}" Height="70" Margin="0,0,0,12"/>
+                <GroupBox Header="Listas externas de bloqueio" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource Hint}"
+                                   Text="O IPBan baixa periodicamente uma lista pública de IPs maliciosos e bloqueia todos (ex.: Emerging Threats)."/>
+                        <Border x:Name="UriForm" Style="{StaticResource FormPanel}">
+                                <StackPanel>
+                                    <DockPanel Margin="0,0,0,6">
+                                        <TextBlock DockPanel.Dock="Left" Text="Prefixo:" Width="110" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="UriPrefix" Width="160" HorizontalAlignment="Left" MaxLength="64"
+                                                 local:InputFilter.Kind="RuleName" ToolTip="Nome das regras criadas (letras, números, _ e -)"/>
+                                        <TextBlock Text="Máximo de IPs:" Margin="16,0,6,0" VerticalAlignment="Center"/>
+                                        <local:NumericBox x:Name="UriMax" Minimum="1" Maximum="1000000"/>
+                                    </DockPanel>
+                                    <DockPanel Margin="0,0,0,6">
+                                        <TextBlock DockPanel.Dock="Left" Text="URL:" Width="110" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="UriUrl" local:InputFilter.Kind="NoSpaces" FontFamily="Consolas"
+                                                 ToolTip="Endereço completo, começando com https://"/>
+                                    </DockPanel>
+                                    <DockPanel>
+                                        <TextBlock DockPanel.Dock="Left" Text="Atualizar a cada:" Width="110" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                        <local:DurationBox x:Name="UriInterval"/>
+                                    </DockPanel>
+                                </StackPanel>
+                        </Border>
+                        <local:RecordListEditor x:Name="UriRules" Height="140"/>
+                    </StackPanel>
+                </GroupBox>
 
-                <TextBlock Style="{StaticResource FieldLabel}" Text="Executar processo ao bloquear um IP"/>
-                <TextBlock Style="{StaticResource Hint}"
-                           Text="Formato: caminho|argumentos. Variáveis: ###IPADDRESS###, ###USERNAME###, ###SOURCE###, ###COUNT###. Um processo por linha. Executa com a conta do serviço (SYSTEM): use apenas programas confiáveis."/>
-                <TextBox x:Name="OnBan" Style="{StaticResource Mono}" Height="50" Margin="0,0,0,12"/>
-
-                <TextBlock Style="{StaticResource FieldLabel}" Text="Executar processo ao desbloquear um IP"/>
-                <TextBox x:Name="OnUnban" Style="{StaticResource Mono}" Height="50" Margin="0,0,0,12"/>
-
-                <TextBlock Style="{StaticResource FieldLabel}" Text="Executar processo em login com sucesso"/>
-                <TextBox x:Name="OnSuccess" Style="{StaticResource Mono}" Height="50"/>
+                <GroupBox Header="Executar programa ao bloquear um IP" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource Hint}"
+                                   Text="Executa com a conta do serviço (SYSTEM): use apenas programas confiáveis."/>
+                        <local:ProcessListEditor x:Name="OnBan"/>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Header="Executar programa ao desbloquear um IP" Margin="0,0,0,10">
+                    <local:ProcessListEditor x:Name="OnUnban"/>
+                </GroupBox>
+                <GroupBox Header="Executar programa em login com sucesso">
+                    <local:ProcessListEditor x:Name="OnSuccess"/>
+                </GroupBox>
             </StackPanel>
         </ScrollViewer>
     </DockPanel>

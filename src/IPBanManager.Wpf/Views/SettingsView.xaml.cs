@@ -1,16 +1,32 @@
+using System;
+using System.Linq;
 using IPBanManager.Core.Models;
+using IPBanManager.Core.Validation;
 using IPBanManager.Core.Views;
 
 namespace IPBanManager.Wpf.Views;
 
 public partial class SettingsView : ConfigSectionViewBase, ISettingsView
 {
-    public SettingsView() => InitializeComponent();
+    public SettingsView()
+    {
+        InitializeComponent();
+        BanTimeInput.Value = "01:00:00:00";
+        BanTime.AttachForm(BanTimeForm);
+        BanTime.Describe = line => $"{line}   ({BanTimeRules.Describe(line)})";
+        BanTime.Sort = BanTimeRules.Sort;
+        BanTime.BuildEntry = existing =>
+        {
+            var value = BanTimeInput.Value;
+            return (value, BanTimeRules.ValidateNew(value, existing));
+        };
+    }
 
     protected override void Populate(IPBanConfiguration c)
     {
-        FailedAttempts.Text = c.FailedLoginAttemptsBeforeBan.ToString();
-        BanTime.Text = c.BanTime;
+        FailedAttempts.Value = c.FailedLoginAttemptsBeforeBan;
+        BanTime.Entries = (c.BanTime ?? "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(v => v.Trim()).Where(v => v.Length > 0).ToList();
         ExpireTime.Value = c.ExpireTime;
         CycleTime.Value = c.CycleTime;
         MinFailed.Value = c.MinimumTimeBetweenFailedLoginAttempts;
@@ -24,14 +40,14 @@ public partial class SettingsView : ConfigSectionViewBase, ISettingsView
         ExternalUrl.Text = c.ExternalIPAddressUrl;
         ApiKey.Text = c.IPThreatApiKey;
         Truncate.Text = c.TruncateUserNameChars;
-        EditDistance.Text = c.UserNameWhitelistMinimumEditDistance.ToString();
-        UserAttempts.Text = c.FailedLoginAttemptsBeforeBanUserNameWhitelist.ToString();
+        EditDistance.Value = c.UserNameWhitelistMinimumEditDistance;
+        UserAttempts.Value = c.FailedLoginAttemptsBeforeBanUserNameWhitelist;
     }
 
     protected override void Collect(IPBanConfiguration c)
     {
-        c.FailedLoginAttemptsBeforeBan = ParseInt(FailedAttempts.Text);
-        c.BanTime = BanTime.Text;
+        c.FailedLoginAttemptsBeforeBan = FailedAttempts.Value;
+        c.BanTime = string.Join(",", BanTime.Entries);
         c.ExpireTime = ExpireTime.Value;
         c.CycleTime = CycleTime.Value;
         c.MinimumTimeBetweenFailedLoginAttempts = MinFailed.Value;
@@ -41,11 +57,11 @@ public partial class SettingsView : ConfigSectionViewBase, ISettingsView
         c.ClearFailedLoginsOnSuccessfulLogin = ClearOnSuccess.IsChecked == true;
         c.ProcessInternalIPAddresses = InternalIps.IsChecked == true;
         c.UseDefaultBannedIPAddressHandler = DefaultHandler.IsChecked == true;
-        c.FirewallRulePrefix = Prefix.Text;
-        c.ExternalIPAddressUrl = ExternalUrl.Text;
-        c.IPThreatApiKey = ApiKey.Text;
+        c.FirewallRulePrefix = Prefix.Text.Trim();
+        c.ExternalIPAddressUrl = ExternalUrl.Text.Trim();
+        c.IPThreatApiKey = ApiKey.Text.Trim();
         c.TruncateUserNameChars = Truncate.Text;
-        c.UserNameWhitelistMinimumEditDistance = ParseInt(EditDistance.Text);
-        c.FailedLoginAttemptsBeforeBanUserNameWhitelist = ParseInt(UserAttempts.Text);
+        c.UserNameWhitelistMinimumEditDistance = EditDistance.Value;
+        c.FailedLoginAttemptsBeforeBanUserNameWhitelist = UserAttempts.Value;
     }
 }

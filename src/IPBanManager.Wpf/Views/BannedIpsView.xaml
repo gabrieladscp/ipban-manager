@@ -6,7 +6,8 @@
         <GroupBox DockPanel.Dock="Top" Header="Bloquear manualmente" Margin="0,0,0,10">
             <DockPanel>
                 <Button DockPanel.Dock="Right" Content="Bloquear IP" Margin="8,0,0,0" Style="{StaticResource PrimaryButton}" Click="Ban_Click"/>
-                <TextBox x:Name="ManualAddress" KeyDown="ManualAddress_KeyDown"
+                <TextBox x:Name="ManualAddress" KeyDown="ManualAddress_KeyDown" FontFamily="Consolas" MaxLength="43"
+                         local:InputFilter.Kind="IpAddress"
                          ToolTip="IP (v4/v6) ou faixa CIDR. Ex.: 203.0.113.7 ou 198.51.100.0/24"/>
             </DockPanel>
         </GroupBox>

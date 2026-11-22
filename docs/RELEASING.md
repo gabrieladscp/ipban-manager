@@ -42,11 +42,13 @@ O que o workflow `Release` faz, nesta ordem (qualquer falha interrompe a publica
 5. Gera `SHA256SUMS.txt` e o **atestado de proveniência** (Sigstore) dos binários.
 6. Publica a Release (`vpk upload github`) e anexa `SHA256SUMS.txt`.
 
-Arquivos da Release: `IPBanManager-<canal>-Setup.exe` (instalador), `IPBanManager-<canal>-Portable.zip`,
-`*-full.nupkg` + `releases.<canal>.json` (consumidos pelo app) e `SHA256SUMS.txt`.
+Arquivos da Release: `IPBanManager-<canal>-Setup.exe` (instalador com atualização automática),
+`IPBanManager-<versão>-Offline-Setup.exe` (instalador offline Inno Setup, sem atualização automática),
+`IPBanManager-<canal>-Portable.zip`, `*-full.nupkg` + `releases.<canal>.json` (consumidos pelo app) e
+`SHA256SUMS.txt`.
 
-`SHA256SUMS.txt` e o atestado cobrem os arquivos **imutáveis desta versão** (Setup, Portable e o `.nupkg` da
-versão). O `releases.<canal>.json` fica de fora de propósito: o `vpk upload --merge` o reescreve ao publicar
+`SHA256SUMS.txt` e o atestado cobrem os arquivos **imutáveis desta versão** (Setup, Offline-Setup, Portable e o
+`.nupkg` da versão). O `releases.<canal>.json` fica de fora de propósito: o `vpk upload --merge` o reescreve ao publicar
 (une com o feed anterior). Ele não precisa de hash próprio porque contém o SHA-1/SHA-256/tamanho de cada pacote,
 e o app recusa qualquer pacote que não confira com eles.
 

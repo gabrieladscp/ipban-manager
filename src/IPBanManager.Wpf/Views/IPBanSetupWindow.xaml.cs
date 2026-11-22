@@ -28,8 +28,12 @@ public partial class IPBanSetupWindow : Window, IIPBanSetupView
 
     public string WhitelistText
     {
-        get => WhitelistBox.Text;
-        set => WhitelistBox.Text = value ?? "";
+        get
+        {
+            WhitelistBox.CommitPending(); // o que foi digitado e não adicionado também conta
+            return string.Join(Environment.NewLine, WhitelistBox.Entries);
+        }
+        set => WhitelistBox.Entries = (value ?? "").Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
     }
 
     public void AppendProgress(string line)
@@ -45,7 +49,7 @@ public partial class IPBanSetupWindow : Window, IIPBanSetupView
             _busy = value;
             InstallButton.IsEnabled = !value && !_finished;
             CloseButton.IsEnabled = !value;
-            WhitelistBox.IsReadOnly = value || _finished;
+            WhitelistBox.IsEnabled = !(value || _finished);
             Cursor = value ? Cursors.Wait : null;
         }
     }
@@ -57,7 +61,7 @@ public partial class IPBanSetupWindow : Window, IIPBanSetupView
         InstallButton.Visibility = Visibility.Collapsed;
         CloseButton.Content = "Fechar";
         CloseButton.IsDefault = true;
-        WhitelistBox.IsReadOnly = true;
+        WhitelistBox.IsEnabled = false;
     }
 
     public void ShowError(string message) => MessageBox.Show(this, message, Caption, MessageBoxButton.OK, MessageBoxImage.Error);

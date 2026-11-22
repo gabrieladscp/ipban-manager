@@ -8,7 +8,11 @@ Em um servidor sem IPBan, basta instalar o IPBan Manager: ele instala e configur
 | Instalador | Onde baixar | Atualiza sozinho | Quando usar |
 |---|---|---|---|
 | `IPBanManager-stable-Setup.exe` | GitHub Releases | **Sim** | Padrão |
-| `IPBanManager-Setup-<versão>.exe` (Inno Setup) | gerado por `build-installer.ps1` | Não | Servidores sem acesso ao GitHub, AppLocker que bloqueia `%LocalAppData%`, implantação silenciosa em massa |
+| `IPBanManager-<versão>-Offline-Setup.exe` (Inno Setup) | GitHub Releases | Não | Servidores sem acesso ao GitHub, AppLocker que bloqueia `%LocalAppData%`, implantação silenciosa em massa |
+
+Os dois são gerados pelo GitHub Actions a partir do mesmo build, constam no `SHA256SUMS.txt` e têm atestado de
+proveniência (`gh attestation verify <arquivo> --repo gabrieladscp/ipban-manager`). O offline instala em
+`C:\Program Files\IPBan Manager` para todos os usuários; para atualizá-lo, rode o offline da versão nova por cima.
 
 ## Instalação padrão (com atualização automática)
 
@@ -25,7 +29,7 @@ Interativa: execute o instalador e deixe marcada a opção **"Instalar/atualizar
 Silenciosa (implantação em massa):
 
 ```powershell
-IPBanManager-Setup-1.1.0.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /WHITELIST=203.0.113.10,198.51.100.0/24
+IPBanManager-1.2.0-Offline-Setup.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /WHITELIST=203.0.113.10,198.51.100.0/24
 ```
 
 Sem `/WHITELIST`, entram na whitelist os IPs das sessões de Área de Trabalho Remota ativas no momento.

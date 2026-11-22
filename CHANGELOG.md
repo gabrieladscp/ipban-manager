@@ -5,6 +5,24 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ## [Unreleased]
 
+### Adicionado
+- **Instalador offline publicado nas Releases** (`IPBanManager-<versão>-Offline-Setup.exe`), gerado pelo GitHub
+  Actions a partir do mesmo build, incluído no `SHA256SUMS.txt` e no atestado de proveniência (assinado quando houver
+  certificado).
+
+### Alterado
+- **Campos à prova de erro em todo o gerenciador:**
+  - Listas: cada lista tem campo de entrada que só aceita caracteres válidos, validação ao adicionar (IP com 4
+    números de 0 a 255, faixa CIDR, IPv6 ou domínio), botões **+** / **−**, detecção de duplicatas e colagem de vários
+    itens de uma vez.
+  - Configurações: números com ▲▼ e limites; tempo de bloqueio como lista de durações (ordenada automaticamente);
+    durações normalizadas (90 min → 1 h 30 min); prefixo do firewall só com letras, números, `_` e `-`; URL validada.
+  - Regras e ações: regras de firewall, listas externas e programas a executar passam a ser montados por formulários
+    (ação, IPs, portas, sistema; URL e intervalo; seletor de arquivo e botões de variáveis), sem digitar o formato do
+    IPBan à mão.
+  - IPs bloqueados e assistente de instalação: mesmo filtro e validação de IP.
+- Títulos de grupos em negrito somente no cabeçalho (o conteúdo ficava todo em negrito).
+
 ## [1.1.0] - 2026-11-22
 
 ### Adicionado

@@ -1,0 +1,18 @@
+<UserControl x:Class="IPBanManager.Wpf.Views.RecordListEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel>
+        <DockPanel DockPanel.Dock="Top" Margin="0,6,0,0">
+            <Button x:Name="AddButton" DockPanel.Dock="Left" Content="+ Adicionar" MinWidth="0" Click="Add_Click"
+                    ToolTip="Adicionar à lista (Enter)"/>
+            <TextBlock x:Name="Message" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="11.5"/>
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Bottom" Margin="0,4,0,0">
+            <Button x:Name="RemoveButton" DockPanel.Dock="Left" Content="− Remover selecionados" MinWidth="0" IsEnabled="False"
+                    Click="Remove_Click" ToolTip="Remover os itens selecionados (Delete)"/>
+            <TextBlock x:Name="CountText" Foreground="#666" FontSize="11.5" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        </DockPanel>
+        <ListBox x:Name="Items" Margin="0,6,0,0" SelectionMode="Extended" MinHeight="60" DisplayMemberPath="Display"
+                 SelectionChanged="Items_SelectionChanged" KeyDown="Items_KeyDown"/>
+    </DockPanel>
+</UserControl>

@@ -63,6 +63,7 @@ public abstract class EditableViewBase : ViewBase, ISaveBarHost
         AddHandler(TextBoxBase.TextChangedEvent, new TextChangedEventHandler((s, e) => MarkDirty()));
         AddHandler(ToggleButton.CheckedEvent, new RoutedEventHandler((s, e) => MarkDirty()));
         AddHandler(ToggleButton.UncheckedEvent, new RoutedEventHandler((s, e) => MarkDirty()));
+        AddHandler(EntryListEditor.ItemsChangedEvent, new RoutedEventHandler((s, e) => MarkDirty()));
         PreviewKeyDown += (s, e) =>
         {
             if (e.Key == Key.S && Keyboard.Modifiers == ModifierKeys.Control)
