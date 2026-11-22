@@ -5,6 +5,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-11-22
+
 ### Corrigido
 - `SHA256SUMS.txt` das Releases listava arquivos que não fazem parte da versão e o `releases.<canal>.json`
   (reescrito na publicação), de modo que a verificação de hash falhava. Agora cobre somente os arquivos
