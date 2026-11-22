@@ -5,6 +5,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-22
+
 ### Adicionado
 - **Instalação completa do IPBan**: o aplicativo traz o IPBan oficial 4.1.0 embutido (SHA-256 conferido na compilação
   e antes de instalar) e o instala/configura sozinho: arquivos em `Program Files\IPBan`, auditoria de logon do Windows,

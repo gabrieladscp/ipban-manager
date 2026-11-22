@@ -13,7 +13,7 @@
     AssemblyVersion/FileVersion numéricos são derivados automaticamente (1.2.0.0).
   -->
   <PropertyGroup>
-    <Version>1.0.3</Version>
+    <Version>1.1.0</Version>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <Product>IPBan Manager</Product>
     <Company>Skytins</Company>
