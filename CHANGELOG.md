@@ -1,9 +1,11 @@
-# Changelog
+﻿# Changelog
 
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e versionamento
 [SemVer 2.0](https://semver.org/lang/pt-BR/). Versões Beta usam o sufixo `-beta.N`.
 
 ## [Unreleased]
+
+## [1.0.1-beta.1] - 2026-11-22
 
 ### Adicionado
 - Atualização automática (Velopack) com canais Stable e Beta, verificação de integridade dos pacotes
