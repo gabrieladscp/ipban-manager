@@ -140,11 +140,30 @@ jobs:
 
       - name: Empacotar (Velopack)
         shell: pwsh
+        env:
+          # Assinatura de código (opcional). Secrets do repositório:
+          #   SIGN_PFX_BASE64   = certificado .pfx em base64  ([Convert]::ToBase64String([IO.File]::ReadAllBytes('cert.pfx')))
+          #   SIGN_PFX_PASSWORD = senha do .pfx
+          # Sem eles, os binários saem sem assinatura (o resto do pipeline é igual).
+          SIGN_PFX_BASE64: ${{ secrets.SIGN_PFX_BASE64 }}
+          SIGN_PFX_PASSWORD: ${{ secrets.SIGN_PFX_PASSWORD }}
+          SIGN_TIMESTAMP_URL: ${{ vars.SIGN_TIMESTAMP_URL || 'http://timestamp.digicert.com' }}
         run: |
           $extra = @()
-          # Assinatura de código (opcional): defina a variável de repositório VPK_SIGN_PARAMS, ex.:
-          #   /f cert.pfx /p senha /tr http://timestamp.digicert.com /td sha256 /fd sha256
-          if ('${{ vars.VPK_SIGN_PARAMS }}' -ne '') { $extra += @('--signParams', '${{ vars.VPK_SIGN_PARAMS }}') }
+          $pfx = Join-Path $env:RUNNER_TEMP 'codesign.pfx'
+          if ($env:SIGN_PFX_BASE64) {
+            [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String($env:SIGN_PFX_BASE64))
+            # Falha cedo e com mensagem clara se o .pfx ou a senha estiverem errados.
+            try {
+              $cert = New-Object Security.Cryptography.X509Certificates.X509Certificate2($pfx, $env:SIGN_PFX_PASSWORD)
+            } catch { Write-Error "Não foi possível abrir o certificado (SIGN_PFX_BASE64/SIGN_PFX_PASSWORD): $($_.Exception.Message)"; exit 1 }
+            if (-not $cert.HasPrivateKey) { Write-Error 'O certificado não contém a chave privada.'; exit 1 }
+            if ($cert.NotAfter -lt (Get-Date)) { Write-Error "Certificado expirado em $($cert.NotAfter)."; exit 1 }
+            "Assinando com: $($cert.Subject) (válido até $($cert.NotAfter.ToString('yyyy-MM-dd')))"
+            $extra += @('--signParams', "/f `"$pfx`" /p `"$env:SIGN_PFX_PASSWORD`" /fd sha256 /tr $env:SIGN_TIMESTAMP_URL /td sha256")
+          } else {
+            '::notice::Binários sem assinatura de código (defina os secrets SIGN_PFX_BASE64 e SIGN_PFX_PASSWORD para assinar).'
+          }
 
           vpk pack `
             --packId ${{ env.PACK_ID }} `
@@ -159,7 +178,23 @@ jobs:
             --releaseNotes release-notes.md `
             --delta None `
             @extra
-          if ($LASTEXITCODE -ne 0) { exit 1 }
+          $code = $LASTEXITCODE
+          Remove-Item $pfx -Force -ErrorAction SilentlyContinue   # o certificado não fica no runner
+          if ($code -ne 0) { exit 1 }
+
+          if ($env:SIGN_PFX_BASE64) {
+            # Confere que a assinatura foi de fato aplicada ao instalador e ao executável DENTRO do pacote
+            # (o vpk assina uma cópia; a pasta publish/ fica como estava).
+            Add-Type -AssemblyName System.IO.Compression.FileSystem
+            $exe = Join-Path $env:RUNNER_TEMP 'IPBanManager.exe'
+            $zip = [IO.Compression.ZipFile]::OpenRead("releases/IPBanManager-${{ steps.ver.outputs.version }}-${{ steps.ver.outputs.channel }}-full.nupkg")
+            try { [IO.Compression.ZipFileExtensions]::ExtractToFile($zip.GetEntry('lib/app/IPBanManager.exe'), $exe, $true) } finally { $zip.Dispose() }
+            foreach ($f in @("releases/IPBanManager-${{ steps.ver.outputs.channel }}-Setup.exe", $exe)) {
+              $sig = Get-AuthenticodeSignature $f
+              "$f -> $($sig.Status) $($sig.SignerCertificate.Subject)"
+              if (-not $sig.SignerCertificate) { Write-Error "$f não foi assinado."; exit 1 }
+            }
+          }
           Get-ChildItem releases | Select-Object Name, Length | Format-Table -AutoSize
 
       # ---------------------------------------------------------------- integridade

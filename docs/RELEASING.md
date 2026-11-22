@@ -10,8 +10,7 @@ você só cria uma tag.
 2. **Branch protection na `main`** (recomendado): exigir pull request e o check **CI / Build e testes**.
    O `release.yml` só publica versões *Stable* de commits que estão na `main`.
 3. Repositório **público** (ou use um token com acesso a Releases privadas — veja "Repositório privado" abaixo).
-4. (Opcional) Assinatura de código: defina a *repository variable* `VPK_SIGN_PARAMS` com os parâmetros do
-   `signtool` (ex.: `/f cert.pfx /p SENHA /tr http://timestamp.digicert.com /td sha256 /fd sha256`).
+4. (Opcional) Assinatura de código — veja a seção "Assinatura de código" abaixo.
 
 Nenhum outro segredo é necessário: o workflow usa o `GITHUB_TOKEN` automático e injeta a URL do repositório no
 executável (`-p:UpdateRepoUrl=https://github.com/gabrieladscp/ipban-manager`).
@@ -62,6 +61,28 @@ artefatos ficam disponíveis por 30 dias na execução.
 # 2) proveniência: prova que o arquivo saiu deste repositório/workflow
 gh attestation verify .\IPBanManager-stable-Setup.exe --repo gabrieladscp/ipban-manager
 ```
+
+## Assinatura de código
+
+Sem certificado tudo funciona (a integridade é garantida por SHA-256 + atestado), mas o Windows SmartScreen pode
+avisar "editor desconhecido" ao executar o instalador. Para assinar, obtenha um certificado de **assinatura de
+código** (OV/EV, de uma autoridade como DigiCert, Sectigo, Certum) em formato `.pfx` e cadastre dois *secrets* em
+**Settings > Secrets and variables > Actions > Secrets**:
+
+| Secret | Valor |
+|---|---|
+| `SIGN_PFX_BASE64` | o `.pfx` em base64: `[Convert]::ToBase64String([IO.File]::ReadAllBytes('cert.pfx')) \| Set-Clipboard` |
+| `SIGN_PFX_PASSWORD` | a senha do `.pfx` |
+
+Pela linha de comando: `gh secret set SIGN_PFX_PASSWORD` e
+`[Convert]::ToBase64String([IO.File]::ReadAllBytes('cert.pfx')) | gh secret set SIGN_PFX_BASE64`.
+
+A partir da próxima Release, o workflow abre o certificado (falha com mensagem clara se a senha estiver errada, se
+faltar a chave privada ou se estiver expirado), assina instalador e executáveis com carimbo de tempo, confere a
+assinatura e apaga o `.pfx` do runner. Secrets nunca aparecem nos logs. Servidor de carimbo de tempo diferente:
+variável de repositório `SIGN_TIMESTAMP_URL` (padrão `http://timestamp.digicert.com`).
+
+> Não use *variables* para a senha: num repositório público elas ficam visíveis nos logs.
 
 ## Retirar uma versão ruim
 

@@ -69,13 +69,18 @@ assets/                          ícones e imagens do instalador
 ```
 dotnet build IPBanManager.sln
 dotnet test tests/IPBanManager.Tests          # 303 testes; filtro: --filter Category=Unit | Integration
-.\build-installer.ps1                         # testa, compila Release e gera o instalador
+.\build-installer.ps1                         # instalador Inno Setup offline (legado, sem auto-atualização)
 ```
+
+O instalador oficial (com atualização automática) é o `IPBanManager-stable-Setup.exe` gerado pelo GitHub Actions
+nas Releases — veja [docs/RELEASING.md](docs/RELEASING.md).
 
 Testes: nomes `Método_Cenário_Resultado`, Arrange/Act/Assert, fakes em `Support/`, pastas temporárias isoladas,
 sem `Task.Delay`/sleeps (esperas por sinais com timeout).
 
 ## Observações
 - Blacklist manual vira a regra `IPBan_GlobalBlacklist_N`; bloqueios automáticos ficam em `IPBan_Block_N`.
-- O instalador não é assinado digitalmente (assine com `signtool` antes de distribuir fora do servidor).
+- Assinatura de código: o pipeline assina instalador e executáveis automaticamente quando os secrets
+  `SIGN_PFX_BASE64` e `SIGN_PFX_PASSWORD` estão definidos (veja [docs/RELEASING.md](docs/RELEASING.md)).
+  Sem certificado, os binários saem sem assinatura e o Windows SmartScreen pode exibir um aviso no primeiro uso.
 - Fora do escopo: instalar/desinstalar o serviço IPBan e ler o `ipban.sqlite` (data/contagem de falhas por IP).

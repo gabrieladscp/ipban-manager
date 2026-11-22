@@ -55,7 +55,7 @@ Downgrades nunca são instalados automaticamente.
 4. Sempre o pacote **completo** (nunca reconstruído por deltas), para que os hashes publicados valem para os
    bytes exatos instalados.
 5. No GitHub: `SHA256SUMS.txt` e atestado de proveniência (`gh attestation verify`). Assinatura de código é
-   opcional (variável `VPK_SIGN_PARAMS`).
+   opcional (secrets `SIGN_PFX_BASE64` e `SIGN_PFX_PASSWORD`; veja `RELEASING.md`).
 
 ## Rollback
 

@@ -5,6 +5,12 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ## [Unreleased]
 
+### Alterado
+- Assinatura de código no pipeline agora usa secrets (`SIGN_PFX_BASE64`/`SIGN_PFX_PASSWORD`) no lugar da
+  variável `VPK_SIGN_PARAMS`, que exporia a senha do certificado nos logs; o certificado é validado antes e a
+  assinatura é conferida depois do empacotamento.
+- Ferramentas de teste atualizadas (Microsoft.NET.Test.Sdk 18.12.0, xunit 2.9.3, xunit.runner.visualstudio 4.0.1).
+
 ## [1.0.2] - 2026-11-22
 
 ### Corrigido
