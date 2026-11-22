@@ -54,7 +54,7 @@ public partial class App : Application
 
         try
         {
-            _logger.Info("Aplicativo iniciado, versão " + CurrentVersionFallback());
+            _logger.Info("Aplicativo iniciado, versão " + AppVersion.Current);
             ComposeUpdates();
             if (RollbackIfUnhealthy()) return; // o processo é reiniciado pelo instalador
 
@@ -82,7 +82,7 @@ public partial class App : Application
             () => VelopackLocator.IsCurrentSet ? VelopackLocator.Current.PackagesDir : null,
             UpdateIdentity.PackId, _logger);
         _guard = new UpdateHealthGuard(stateStore, packages, _logger);
-        _updateService = new VelopackUpdateService(RepositoryUrl(), _guard, packages, _logger, CurrentVersionFallback);
+        _updateService = new VelopackUpdateService(RepositoryUrl(), _guard, packages, _logger, () => AppVersion.Current);
         _updateSettings = new UpdateSettingsAccessor(new FileUpdateSettingsStore(_logger));
     }
 
@@ -147,15 +147,6 @@ public partial class App : Application
     private static string RepositoryUrl() =>
         typeof(App).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
             .FirstOrDefault(a => a.Key == "UpdateRepoUrl")?.Value;
-
-    /// <summary>Versão do próprio executável (usada fora de uma instalação Velopack).</summary>
-    private static string CurrentVersionFallback()
-    {
-        var info = typeof(App).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
-                   ?? typeof(App).Assembly.GetName().Version.ToString(3);
-        var plus = info.IndexOf('+');
-        return plus >= 0 ? info.Substring(0, plus) : info;
-    }
 
     // ------------------------------------------------------------------ composição das telas
 

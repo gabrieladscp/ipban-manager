@@ -19,7 +19,7 @@ public partial class MainWindow : Window, IMainView, IStatusSink, IUnsavedChange
     public MainWindow()
     {
         InitializeComponent();
-        Title = "IPBan Manager " + typeof(MainWindow).Assembly.GetName().Version.ToString(3);
+        Title = "IPBan Manager " + AppVersion.Current;
         _statusTimer.Tick += (s, e) => { _statusTimer.Stop(); StatusBarText.Text = "Pronto."; StatusBarText.Foreground = Brushes.Black; };
     }
 
