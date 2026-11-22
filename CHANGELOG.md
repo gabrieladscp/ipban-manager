@@ -5,6 +5,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-22
+
 ### Adicionado
 - **Instalador offline publicado nas Releases** (`IPBanManager-<versão>-Offline-Setup.exe`), gerado pelo GitHub
   Actions a partir do mesmo build, incluído no `SHA256SUMS.txt` e no atestado de proveniência (assinado quando houver
